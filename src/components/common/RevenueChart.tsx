@@ -1,6 +1,4 @@
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -10,10 +8,6 @@ import {
   AreaChart,
   Area,
 } from 'recharts';
-import type {
-  ValueType,
-  NameType,
-} from 'recharts/types/component/DefaultTooltipContent';
 
 type CustomTooltipProps = {
   active?: boolean;

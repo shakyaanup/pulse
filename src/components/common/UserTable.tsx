@@ -1,5 +1,4 @@
 import { Badge, Button } from '../../components/common';
-import { formatDate } from '../../utils';
 
 const UserTable = () => {
   return (

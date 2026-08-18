@@ -1,4 +1,4 @@
-import { MetricCard, User, Subscription } from '../types';
+import { MetricCard, User } from '../types';
 
 export const mockMetrics: MetricCard[] = [
   {
