@@ -1,0 +1,19 @@
+.card {
+  background-color: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  padding: $space-6;
+}
+
+.card__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: $space-4;
+}
+
+.card__body {
+  color: $color-text-primary;
+}

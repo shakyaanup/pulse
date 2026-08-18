@@ -1,0 +1,92 @@
+.user-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  flex-wrap: wrap;
+
+  &__stats {
+    display: flex;
+    gap: $space-6;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: $color-text-primary;
+    letter-spacing: -0.03em;
+  }
+
+  &__stat-label {
+    font-size: 12px;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    flex-wrap: wrap;
+  }
+
+  &__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  &__search-icon {
+    position: absolute;
+    left: $space-3;
+    color: $color-text-muted;
+    pointer-events: none;
+  }
+
+  &__input {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    color: $color-text-primary;
+    font-family: $font-sans;
+    font-size: 13px;
+    height: 36px;
+    outline: none;
+    padding: 0 $space-3 0 $space-8;
+    width: 240px;
+    transition: border-color 0.15s es;
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  &__select {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    color: $color-text-primary;
+    font-family: $font-sans;
+    font-size: 13px;
+    height: 36px;
+    outline: none;
+    padding: 0 $space-4;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+}

@@ -1,26 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Suspense } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { routeConfig } from './config/routes';
+import { ROUTES } from './constants';
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <Suspense fallback={<div className="page-loader">Loading...</div>}>
+        <Routes>
+          {routeConfig.map(({ path, component: Component }) => (
+            <Route key={path} path={path} element={<Component />} />
+          ))}
+          <Route
+            path="*"
+            element={<Navigate to={ROUTES.DASHBOARD} replace />}
+          />
+        </Routes>
+      </Suspense>
     </div>
   );
 }
-
-export default App;

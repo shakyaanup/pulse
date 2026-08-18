@@ -1,0 +1,140 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.layout__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.layout__content {
+  flex: 1;
+  padding: $space-6;
+  overflow-y: auto;
+}
+
+/*======= Sidebar ==========*/
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background-color: $color-surface;
+  border-right: 1px solid $color-border;
+  display: flex;
+  flex-direction: column;
+  padding: $space-6 0;
+  position: sticky;
+  top: 0;
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: 0 $space-5 $space-6;
+    margin-bottom: $space-4;
+
+    svg { 
+      display: block;
+      max-width: 40px; 
+    }
+
+    span {
+      font-size: 22px;
+      font-weight: 700;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    padding: 0 $space-3
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-3 $space-4;
+    border-radius: $radius-md;
+    color: $color-text-secondary;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background-color: $color-surface-raised;
+      color: $color-text-primary;
+    }
+
+    &--active {
+      background-color: $color-primary;
+      color: #fff;
+
+      &:hover {
+        background-color: $color-primary-hover;
+        color: #fff;;
+      }
+    }
+  }
+}
+
+/*======= Navbar ==========*/
+.navbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $color-bg;
+  border-bottom: 1px solid $color-border;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 0 $space-6;
+}
+
+.navbar__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: $color-text-primary;
+  letter-spacing: -0.02em;
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
+.navbar__icon-btn {
+  background: none;
+  border: none;
+  color: $color-text-secondary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-2;
+  border-radius: $radius-sm;
+  transition: all 0.15s ease;
+}
+
+.navbar__icon-btn:hover {
+  background-color: $color-surface-raised;
+  color: $color-text-primary;
+}
+
+.navbar__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: $radius-full;
+  background-color: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}

@@ -1,0 +1,87 @@
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th {
+    text-align: left;
+    padding: $space-3 $space-4;
+    color: $color-text-muted;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid $color-border;
+    white-space: nowrap;
+  }
+
+  tr {
+    border-bottom: 1px solid $color-border;
+    transition: background-color 0.15s ease;
+
+    &:last-child { border-bottom: none; }
+  }
+
+  td {
+    padding: $space-4;
+    vertical-align: middle;
+  }
+
+  &__user-cell {
+    display: flex;
+    align-items: center;
+    gap: $space-3
+  }
+
+  &__avatar {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: $radius-full;
+    background-color: $color-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;;
+  }
+
+  &__user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2;
+  }
+
+  &__name {
+    font-weight: 500;
+    color: $color-text-primary;
+  }
+
+  &__email {
+    color: $color-text-secondary;
+    font-size: 12px;
+  }
+
+  &__role {
+    color: $color-text-secondary;
+    font-size: 13px;;
+  }
+
+  &__date {
+    color: $color-text-muted;
+    white-space: nowrap;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-2;
+  }
+
+  &__empty {
+    padding: $space-12;
+    text-align: center;
+    color: $color-text-muted;
+    font-size: 14px;
+  }
+}
