@@ -7,4 +7,3 @@ export { default as RevenueChart } from './RevenueChart';
 export { default as RecentUsers } from './RecentUsers';
 export { default as UserTable } from './UserTable';
 export { default as UserFilters } from './UserFilters';
-export { default as CurrentPlanCard } from './currentPlanCard';
