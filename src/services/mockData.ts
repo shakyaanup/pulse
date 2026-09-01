@@ -1,4 +1,4 @@
-import { MetricCard, User } from '../types';
+import { MetricCard, User, Plan, Subscription, Invoice } from '../types';
 
 export const mockMetrics: MetricCard[] = [
   {
@@ -144,3 +144,116 @@ export const mockRecentUsers: Pick<
   User,
   'id' | 'name' | 'email' | 'status' | 'createdAt'
 >[] = mockUsers.slice(0, 5);
+
+export const mockPlans: Plan[] = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: 29,
+    interval: 'monthly',
+    features: [
+      'Up to 5 team members',
+      '10,000 trancked events/mo',
+      'Basic analytics dashboard',
+      '7-day data retention',
+      'Email support',
+    ],
+    isPopular: false,
+    isCurrent: false,
+  },
+  {
+    id: 'growth',
+    name: 'Growth',
+    price: 79,
+    interval: 'monthly',
+    features: [
+      'Up to 25 team members',
+      '100,000 trancked events/mo',
+      'Advanced analytics + charts',
+      '90-day data retention',
+      'Priority email support',
+      'CSV exports',
+      'Custom dashboards',
+    ],
+    isPopular: true,
+    isCurrent: true,
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    price: 199,
+    interval: 'monthly',
+    features: [
+      'Unlimited team members',
+      'Unlimited trancked events',
+      'Full analytics suite',
+      '365-day data retention',
+      'Dedicated account manager',
+      'SSO & SAML',
+      'Custom integrations',
+      'SLA guarantee',
+    ],
+    isPopular: false,
+    isCurrent: false,
+  },
+];
+
+export const mockSubscription: Subscription = {
+  id: 'sub_abc123',
+  plan: mockPlans[1],
+  status: 'active',
+  currentPeriodEnd: '2025-01-31',
+  nextBillingDate: '2025-02-01',
+  seats: 12,
+};
+
+export const mockInvoices: Invoice[] = [
+  {
+    id: 'INV-2024-012',
+    date: '2024-12-01',
+    amount: 79,
+    status: 'paid',
+    planName: 'Growth',
+    downloadUrl: '#',
+  },
+  {
+    id: 'INV-2024-011',
+    date: '2024-11-01',
+    amount: 79,
+    status: 'paid',
+    planName: 'Growth',
+    downloadUrl: '#',
+  },
+  {
+    id: 'INV-2024-010',
+    date: '2024-10-01',
+    amount: 79,
+    status: 'paid',
+    planName: 'Growth',
+    downloadUrl: '#',
+  },
+  {
+    id: 'INV-2024-009',
+    date: '2024-09-01',
+    amount: 79,
+    status: 'failed',
+    planName: 'Growth',
+    downloadUrl: '#',
+  },
+  {
+    id: 'INV-2024-008',
+    date: '2024-08-01',
+    amount: 29,
+    status: 'paid',
+    planName: 'Starter',
+    downloadUrl: '#',
+  },
+  {
+    id: 'INV-2024-007',
+    date: '2024-07-01',
+    amount: 29,
+    status: 'paid',
+    planName: 'Starter',
+    downloadUrl: '#',
+  },
+];
