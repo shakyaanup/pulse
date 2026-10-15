@@ -16,6 +16,7 @@ export interface Plan {
   price: number;
   interval: 'monthly' | 'yearly';
   features: string[];
+  seatLimit: number | null; // null = unlimited
   isPopular: boolean;
   isCurrent: boolean;
 }
@@ -23,7 +24,7 @@ export interface Plan {
 export interface Subscription {
   id: string;
   plan: Plan;
-  status: 'active' | 'past_due' | 'cancelled' | 'trailing';
+  status: 'active' | 'past_due' | 'cancelled' | 'trialing';
   currentPeriodEnd: string;
   nextBillingDate: string;
   seats: number;

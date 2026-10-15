@@ -153,11 +153,12 @@ export const mockPlans: Plan[] = [
     interval: 'monthly',
     features: [
       'Up to 5 team members',
-      '10,000 trancked events/mo',
+      '10,000 tracked events/mo',
       'Basic analytics dashboard',
       '7-day data retention',
       'Email support',
     ],
+    seatLimit: 5,
     isPopular: false,
     isCurrent: true,
   },
@@ -168,13 +169,14 @@ export const mockPlans: Plan[] = [
     interval: 'monthly',
     features: [
       'Up to 25 team members',
-      '100,000 trancked events/mo',
+      '100,000 tracked events/mo',
       'Advanced analytics + charts',
       '90-day data retention',
       'Priority email support',
       'CSV exports',
       'Custom dashboards',
     ],
+    seatLimit: 25,
     isPopular: true,
     isCurrent: false,
   },
@@ -185,7 +187,7 @@ export const mockPlans: Plan[] = [
     interval: 'monthly',
     features: [
       'Unlimited team members',
-      'Unlimited trancked events',
+      'Unlimited tracked events',
       'Full analytics suite',
       '365-day data retention',
       'Dedicated account manager',
@@ -193,6 +195,7 @@ export const mockPlans: Plan[] = [
       'Custom integrations',
       'SLA guarantee',
     ],
+    seatLimit: null,
     isPopular: false,
     isCurrent: false,
   },
@@ -200,11 +203,11 @@ export const mockPlans: Plan[] = [
 
 export const mockSubscription: Subscription = {
   id: 'sub_abc123',
-  plan: mockPlans[1],
+  plan: mockPlans[0],
   status: 'active',
   currentPeriodEnd: '2025-01-31',
   nextBillingDate: '2025-02-01',
-  seats: 12,
+  seats: 4,
 };
 
 export const mockInvoices: Invoice[] = [

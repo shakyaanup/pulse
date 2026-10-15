@@ -7,11 +7,18 @@ export const formatCurrency = (value: number, currency = 'USD'): string => {
 };
 
 export const formatDate = (dateString: string): string => {
+  // new Date('2025-02-01') is midnight UTC, which is still Jan 31 in the
+  // Americas. Build date-only strings as local dates so the day never shifts.
+  const [year, month, day] = dateString.split('-').map(Number);
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(dateString)
+    ? new Date(year, month - 1, day)
+    : new Date(dateString);
+
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
-  }).format(new Date(dateString));
+  }).format(date);
 };
 
 export const formatPercentage = (value: number): string => {
