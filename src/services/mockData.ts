@@ -159,7 +159,7 @@ export const mockPlans: Plan[] = [
       'Email support',
     ],
     isPopular: false,
-    isCurrent: false,
+    isCurrent: true,
   },
   {
     id: 'growth',
@@ -176,7 +176,7 @@ export const mockPlans: Plan[] = [
       'Custom dashboards',
     ],
     isPopular: true,
-    isCurrent: true,
+    isCurrent: false,
   },
   {
     id: 'enterprise',
