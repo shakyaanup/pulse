@@ -1,4 +1,6 @@
 import NotificationBell from './NotificationBell';
+import ProfileMenu from './ProfileMenu';
+import { mockCurrentUser, mockSubscription } from '../../services/mockData';
 
 interface NavbarProps {
   pageTitle: string;
@@ -11,9 +13,10 @@ const Navbar = ({ pageTitle }: NavbarProps) => {
 
       <div className="navbar__actions">
         <NotificationBell />
-        <div className="navbar__avatar">
-          <span>JD</span>
-        </div>
+        <ProfileMenu
+          user={mockCurrentUser}
+          planName={mockSubscription.plan.name}
+        />
       </div>
     </div>
   );

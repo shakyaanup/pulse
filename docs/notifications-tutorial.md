@@ -221,6 +221,12 @@ routing.
 
 ### Closing on outside click and Escape
 
+> **Update:** this logic has since moved into a shared hook,
+> `hooks/useDropdown.ts`, so the profile menu can use it too (see
+> [profile-menu-tutorial.md](profile-menu-tutorial.md)). The bell now calls
+> `const { isOpen, toggle, close, containerRef, triggerRef } = useDropdown();`.
+> The code below is what runs inside the hook.
+
 ```tsx
 useEffect(() => {
   if (!isOpen) return;
@@ -300,6 +306,10 @@ the dot.
 ## 6. Styles — `notifications.scss`
 
 ### Positioning the badge and the panel
+
+> **Update:** the panel rules below now live in a `dropdown-panel` mixin in
+> `styles/mixins.scss`, shared with the profile menu. The panel is just
+> `@include dropdown-panel(360px);`.
 
 ```scss
 .notifications { position: relative; }        // anchor

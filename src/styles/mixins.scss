@@ -1,0 +1,27 @@
+// Shared look for header dropdown panels (notifications, profile menu).
+// Usage: .my-panel { @include dropdown-panel(320px); }
+@mixin dropdown-panel($width) {
+  position: absolute;
+  top: calc(100% + #{$space-2});
+  right: 0;
+  width: $width;
+  max-width: calc(100vw - #{$space-8});
+  background-color: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  box-shadow: $shadow-lg;
+  z-index: 20;
+  overflow: hidden;
+  animation: dropdown-in 0.12s ease-out;
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

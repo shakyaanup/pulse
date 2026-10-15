@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   BarChart3,
@@ -11,6 +10,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import clsx from 'clsx';
 import { useNotifications } from '../../context/NotificationsContext';
+import { useDropdown } from '../../hooks/useDropdown';
 import { Notification } from '../../types';
 import { formatRelativeTime } from '../../utils';
 
@@ -27,39 +27,18 @@ const MAX_BADGE_COUNT = 9;
 const NotificationBell = () => {
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
     useNotifications();
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const bellRef = useRef<HTMLButtonElement>(null);
+  const {
+    isOpen,
+    toggle,
+    close,
+    containerRef,
+    triggerRef: bellRef,
+  } = useDropdown();
   const navigate = useNavigate();
-
-  // While open: close on a click outside, or on Escape
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-        bellRef.current?.focus(); // give keyboard users their place back
-      }
-    };
-
-    document.addEventListener('mousedown', handlePointerDown);
-    document.addEventListener('keydown', handleKeyDown);
-    // Cleanup runs when the dropdown closes or the component unmounts
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen]);
 
   const handleSelect = (notification: Notification) => {
     markAsRead(notification.id);
-    setIsOpen(false);
+    close();
     if (notification.link) navigate(notification.link);
   };
 
@@ -80,7 +59,7 @@ const NotificationBell = () => {
         aria-haspopup="dialog"
         aria-controls="notifications-panel"
         aria-expanded={isOpen}
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={toggle}
       >
         <Bell size={18} />
         {unreadCount > 0 && (

@@ -8,3 +8,4 @@ export { default as UserTable } from './UserTable';
 export { default as UserFilters } from './UserFilters';
 export { default as PlanCard } from './PlanCard';
 export { default as CurrentPlanCard } from './CurrentPlanCard';
+export { default as Avatar } from './Avatar';

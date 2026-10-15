@@ -1,0 +1,129 @@
+.profile-menu {
+  position: relative; // anchor for the panel
+
+  &__trigger {
+    display: flex;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: $radius-full;
+    transition: box-shadow 0.15s ease;
+
+    &:hover,
+    &[aria-expanded='true'] {
+      box-shadow: 0 0 0 2px $color-border;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px $color-primary;
+    }
+  }
+
+  &__panel {
+    @include dropdown-panel(280px);
+  }
+
+  &__header {
+    display: flex;
+    gap: $space-3;
+    padding: $space-4;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__identity {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 14px;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+
+  &__email {
+    font-size: 12px;
+    color: $color-text-secondary;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: $space-1;
+  }
+
+  &__details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-3;
+    padding: $space-3 $space-4;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__detail {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    dt {
+      font-size: 11px;
+      color: $color-text-muted;
+    }
+
+    dd {
+      font-size: 13px;
+      font-weight: 500;
+      color: $color-text-primary;
+    }
+  }
+
+  &__links,
+  &__footer {
+    display: flex;
+    flex-direction: column;
+    padding: $space-2;
+  }
+
+  &__footer {
+    border-top: 1px solid $color-border;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    width: 100%;
+    padding: $space-2 $space-3;
+    background: none;
+    border: none;
+    border-radius: $radius-sm;
+    color: $color-text-secondary;
+    font-family: $font-sans;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: left;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      background-color: $color-surface-raised;
+      color: $color-text-primary;
+      outline: none;
+    }
+
+    &--danger {
+      color: $color-danger;
+
+      &:hover,
+      &:focus-visible {
+        background-color: rgba(255, 92, 92, 0.1);
+        color: $color-danger;
+      }
+    }
+  }
+}

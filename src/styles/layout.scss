@@ -124,17 +124,3 @@
   background-color: $color-surface-raised;
   color: $color-text-primary;
 }
-
-.navbar__avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: $radius-full;
-  background-color: $color-primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  cursor: pointer;
-}

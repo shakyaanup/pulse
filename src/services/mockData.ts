@@ -331,3 +331,15 @@ export const mockNotifications: Notification[] = [
     link: ROUTES.BILLING,
   },
 ];
+
+// The signed-in user shown in the header. Remove avatarUrl to see the
+// initials fallback.
+export const mockCurrentUser: User = {
+  id: 'me',
+  name: 'Jane Doe',
+  email: 'jane.doe@pulse.dev',
+  role: 'admin',
+  status: 'active',
+  createdAt: '2023-11-02',
+  avatarUrl: 'https://i.pravatar.cc/150?img=47',
+};
