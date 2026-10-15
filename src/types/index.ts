@@ -92,3 +92,11 @@ export interface AnalyticsData {
   topPages: TopPage[];
   planBreakdown: PlanBreakdown[];
 }
+
+// User management
+
+export interface UserFilterValues {
+  search: string;
+  status: User['status'] | 'all';
+  role: User['role'] | 'all';
+}

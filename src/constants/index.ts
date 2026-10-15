@@ -22,3 +22,12 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'Billing', path: ROUTES.BILLING, icon: CreditCard },
   { label: 'Users', path: ROUTES.USERS, icon: Users },
 ];
+
+export const USER_STATUS_BADGE: Record<
+  'active' | 'inactive' | 'suspended',
+  'success' | 'warning' | 'danger'
+> = {
+  active: 'success',
+  inactive: 'warning',
+  suspended: 'danger',
+};

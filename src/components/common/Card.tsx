@@ -8,7 +8,7 @@ interface CardProps {
 const Card = ({ title, children }: CardProps) => {
   return (
     <div className="card">
-      <h3 className="card__title">{title}</h3>
+      {title && <h3 className="card__title">{title}</h3>}
       <div className="card__body">{children}</div>
     </div>
   );

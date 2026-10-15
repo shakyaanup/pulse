@@ -1,14 +1,8 @@
+import { USER_STATUS_BADGE } from '../../constants';
 import { formatDate } from '../../utils';
 import Badge from './Badge';
 
-type UserStatus = 'active' | 'inactive' | 'suspended';
-type BadgeVariant = 'success' | 'warning' | 'danger' | 'neutral';
-
-const statusVariantMap: Record<UserStatus, BadgeVariant> = {
-  active: 'success',
-  inactive: 'warning',
-  suspended: 'danger',
-};
+type UserStatus = keyof typeof USER_STATUS_BADGE;
 
 interface RecentUsersProps {
   users: {
@@ -33,7 +27,7 @@ const RecentUsers = ({ users }: RecentUsersProps) => {
           <span className="recent-users__date">
             {formatDate(user.createdAt)}
           </span>
-          <Badge label={user.status} variant={statusVariantMap[user.status]} />
+          <Badge label={user.status} variant={USER_STATUS_BADGE[user.status]} />
         </div>
       ))}
     </div>

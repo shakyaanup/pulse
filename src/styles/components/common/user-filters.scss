@@ -61,7 +61,7 @@
     outline: none;
     padding: 0 $space-3 0 $space-8;
     width: 240px;
-    transition: border-color 0.15s es;
+    transition: border-color 0.15s ease;
 
     &::placeholder {
       color: $color-text-muted;
