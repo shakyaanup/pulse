@@ -101,3 +101,15 @@ export interface UserFilterValues {
   status: User['status'] | 'all';
   role: User['role'] | 'all';
 }
+
+// Notifications
+
+export interface Notification {
+  id: string;
+  type: 'user' | 'billing' | 'alert' | 'report';
+  title: string;
+  message: string;
+  createdAt: string; // ISO date-time
+  read: boolean;
+  link?: string; // route to open when the notification is clicked
+}

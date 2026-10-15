@@ -1,4 +1,12 @@
-import { MetricCard, User, Plan, Subscription, Invoice } from '../types';
+import { ROUTES } from '../constants';
+import {
+  MetricCard,
+  User,
+  Plan,
+  Subscription,
+  Invoice,
+  Notification,
+} from '../types';
 
 export const mockMetrics: MetricCard[] = [
   {
@@ -258,5 +266,68 @@ export const mockInvoices: Invoice[] = [
     status: 'paid',
     planName: 'Starter',
     downloadUrl: '#',
+  },
+];
+
+// Timestamps are relative to when the app loads, so the dropdown always shows
+// recent-looking times like "12 minutes ago"
+const minutesAgo = (minutes: number) =>
+  new Date(Date.now() - minutes * 60 * 1000).toISOString();
+
+export const mockNotifications: Notification[] = [
+  {
+    id: 'n1',
+    type: 'alert',
+    title: 'Payment failed',
+    message:
+      "We couldn't charge your card. Update your payment method to avoid interruption.",
+    createdAt: minutesAgo(12),
+    read: false,
+    link: ROUTES.BILLING,
+  },
+  {
+    id: 'n2',
+    type: 'user',
+    title: 'New team member',
+    message: 'Natasha Romanoff joined your workspace.',
+    createdAt: minutesAgo(60),
+    read: false,
+    link: ROUTES.USERS,
+  },
+  {
+    id: 'n3',
+    type: 'billing',
+    title: 'Seat limit almost reached',
+    message: "You're using 4 of 5 seats on the Starter plan.",
+    createdAt: minutesAgo(3 * 60),
+    read: false,
+    link: ROUTES.BILLING,
+  },
+  {
+    id: 'n4',
+    type: 'report',
+    title: 'Weekly report ready',
+    message: 'Visitors are up 9.8% compared with last week.',
+    createdAt: minutesAgo(26 * 60),
+    read: true,
+    link: ROUTES.ANALYTICS,
+  },
+  {
+    id: 'n5',
+    type: 'user',
+    title: 'User suspended',
+    message: "Diana Prince's account was suspended by an admin.",
+    createdAt: minutesAgo(2 * 24 * 60),
+    read: true,
+    link: ROUTES.USERS,
+  },
+  {
+    id: 'n6',
+    type: 'billing',
+    title: 'Invoice paid',
+    message: 'Your December invoice was paid. Thank you!',
+    createdAt: minutesAgo(5 * 24 * 60),
+    read: true,
+    link: ROUTES.BILLING,
   },
 ];

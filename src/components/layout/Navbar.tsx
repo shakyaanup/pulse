@@ -1,4 +1,4 @@
-import { Bell } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 
 interface NavbarProps {
   pageTitle: string;
@@ -10,9 +10,7 @@ const Navbar = ({ pageTitle }: NavbarProps) => {
       <h1 className="navbar__title">{pageTitle}</h1>
 
       <div className="navbar__actions">
-        <button className="navbar__icon-btn" aria-label="Notification">
-          <Bell size={18} />
-        </button>
+        <NotificationBell />
         <div className="navbar__avatar">
           <span>JD</span>
         </div>

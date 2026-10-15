@@ -1,0 +1,189 @@
+.notifications {
+  position: relative; // anchor for the badge and the dropdown panel
+
+  &__bell {
+    position: relative;
+  }
+
+  &__badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(35%, -35%);
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: $radius-full;
+    // Ring in the navbar colour makes the badge look cut out of the bell
+    border: 2px solid $color-bg;
+    background-color: $color-danger;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__panel {
+    position: absolute;
+    top: calc(100% + #{$space-2});
+    right: 0;
+    width: 360px;
+    max-width: calc(100vw - #{$space-8});
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    box-shadow: $shadow-lg;
+    z-index: 20;
+    overflow: hidden;
+    animation: notifications-in 0.12s ease-out;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $space-3 $space-4;
+    border-bottom: 1px solid $color-border;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+
+  &__mark-all {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    background: none;
+    border: none;
+    color: $color-primary;
+    font-size: 12px;
+    font-weight: 500;
+    padding: $space-1;
+    border-radius: $radius-sm;
+
+    &:hover {
+      color: $color-text-primary;
+    }
+  }
+
+  &__list {
+    list-style: none;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  &__item {
+    display: flex;
+    gap: $space-3;
+    width: 100%;
+    padding: $space-3 $space-4;
+    background: none;
+    border: none;
+    border-bottom: 1px solid $color-border;
+    text-align: left;
+    color: inherit;
+    font-family: $font-sans;
+    transition: background-color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      background-color: $color-surface-raised;
+      outline: none;
+    }
+
+    &--unread {
+      background-color: rgba(108, 99, 255, 0.06);
+    }
+  }
+
+  li:last-child &__item {
+    border-bottom: none;
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: $radius-full;
+
+    &--user {
+      background-color: rgba(108, 99, 255, 0.15);
+      color: $color-primary;
+    }
+
+    &--billing {
+      background-color: rgba(34, 211, 165, 0.15);
+      color: $color-accent;
+    }
+
+    &--alert {
+      background-color: rgba(255, 92, 92, 0.15);
+      color: $color-danger;
+    }
+
+    &--report {
+      background-color: rgba(245, 158, 11, 0.15);
+      color: $color-warning;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__item-title {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    font-size: 13px;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+
+  &__unread-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: $radius-full;
+    background-color: $color-primary;
+  }
+
+  &__message {
+    font-size: 12px;
+    line-height: 1.5;
+    color: $color-text-secondary;
+  }
+
+  &__time {
+    font-size: 11px;
+    color: $color-text-muted;
+  }
+
+  &__empty {
+    padding: $space-8 $space-4;
+    text-align: center;
+    font-size: 13px;
+    color: $color-text-muted;
+  }
+}
+
+@keyframes notifications-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
