@@ -5,6 +5,7 @@ import clsx from 'clsx';
 
 interface MetricCardProps {
   metric: MetricCardType;
+  comparisonLabel?: string;
 }
 
 const formatValue = (
@@ -16,7 +17,10 @@ const formatValue = (
   return value.toLocaleString();
 };
 
-const MetricCard = ({ metric }: MetricCardProps) => {
+const MetricCard = ({
+  metric,
+  comparisonLabel = 'than last month',
+}: MetricCardProps) => {
   const TrendIcon =
     metric.trend === 'up'
       ? TrendingUp
@@ -39,7 +43,9 @@ const MetricCard = ({ metric }: MetricCardProps) => {
         )}
       >
         <TrendIcon size={18} />
-        <span>{formatPercentage(metric.change)} than last month</span>
+        <span>
+          {formatPercentage(metric.change)} {comparisonLabel}
+        </span>
       </div>
     </div>
   );

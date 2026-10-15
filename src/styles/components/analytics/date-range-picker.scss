@@ -1,0 +1,41 @@
+.date-range-picker {
+  display: inline-flex;
+  gap: $space-1;
+  padding: $space-1;
+  background-color: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+
+  &__option {
+    background: none;
+    border: none;
+    border-radius: $radius-sm;
+    color: $color-text-secondary;
+    cursor: pointer;
+    font-family: $font-sans;
+    font-size: 13px;
+    font-weight: 500;
+    padding: $space-2 $space-4;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+
+    &:hover {
+      color: $color-text-primary;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: 1px;
+    }
+
+    &--active {
+      background-color: $color-primary;
+      color: #fff;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+}

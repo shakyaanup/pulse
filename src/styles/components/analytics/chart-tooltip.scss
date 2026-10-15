@@ -1,0 +1,26 @@
+.chart-tooltip {
+  background-color: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  color: $color-text-primary;
+  font-size: 13px;
+  padding: $space-2 $space-3;
+  box-shadow: $shadow-md;
+
+  &__label {
+    color: $color-text-secondary;
+    margin-bottom: $space-1;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: $radius-full;
+  }
+}

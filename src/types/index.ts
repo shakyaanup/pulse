@@ -45,3 +45,50 @@ export interface Invoice {
   planName: string;
   downloadUrl: string;
 }
+
+// Analytics
+
+export type DateRange = '7d' | '30d' | '90d' | '12m';
+
+export interface TrafficPoint {
+  label: string;
+  visitors: number;
+  signups: number;
+}
+
+export interface RevenueByPlanPoint {
+  label: string;
+  starter: number;
+  growth: number;
+  enterprise: number;
+}
+
+export interface TrafficSource {
+  name: string;
+  visitors: number;
+}
+
+export interface TopPage {
+  path: string;
+  views: number;
+  avgTimeSeconds: number;
+  bounceRate: number;
+}
+
+export interface PlanBreakdown {
+  plan: Plan['name'];
+  customers: number;
+  revenue: number;
+  share: number;
+  churnRate: number;
+}
+
+export interface AnalyticsData {
+  periodLabel: string;
+  metrics: MetricCard[];
+  traffic: TrafficPoint[];
+  revenueByPlan: RevenueByPlanPoint[];
+  trafficSources: TrafficSource[];
+  topPages: TopPage[];
+  planBreakdown: PlanBreakdown[];
+}
