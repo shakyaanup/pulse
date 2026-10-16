@@ -6,17 +6,22 @@ they can move to. It has two parts:
 1. **Current plan card**: plan name, status, price, billing dates, a team-seat
    usage meter and a "Change plan" button
 2. **Available plans**: three pricing cards (Starter, Growth, Enterprise),
-   with the current one outlined and the popular one highlighted
+   with the current one outlined and the popular one highlighted. The
+   **Upgrade / Downgrade** buttons switch the plan, and the whole app updates,
+   including the plan shown in the profile menu.
 
 ```
 src/
 ├── types/index.ts                         ← 1. Plan + Subscription types
 ├── services/mockData.ts                   ← 2. mockPlans, mockSubscription
+├── context/SubscriptionContext.tsx        ← 5. shared subscription state
+├── constants/index.ts                     ← PLAN_INTERVAL_LABEL
 ├── components/common/
 │   ├── PlanCard.tsx                       ← 3. one pricing card
 │   ├── CurrentPlanCard.tsx                ← 4. the subscription summary
 │   └── CurrentPlanCard.test.tsx           ← 7. tests
 ├── pages/Billing/index.tsx                ← 5. the page
+├── pages/Billing/Billing.test.tsx         ← 7. plan switching tests
 └── styles/
     ├── pages/billings.scss                ← 6. page layout
     └── components/common/
@@ -37,7 +42,6 @@ export interface Plan {
   features: string[];
   seatLimit: number | null; // null = unlimited
   isPopular: boolean;
-  isCurrent: boolean;
 }
 
 export interface Subscription {
@@ -88,48 +92,73 @@ export const mockSubscription: Subscription = {
 `plan: mockPlans[0]` **refers to** the plan object instead of copying its fields,
 so the subscription can't hold an outdated price.
 
-Each plan also has an `isCurrent` flag. Storing "current" in two places (the
-plan's flag *and* the subscription) is how they ended up disagreeing during
-development: Starter was flagged current while the subscription still pointed
-at Growth. Section 5 shows how the page now uses only the subscription.
+Plans used to have an `isCurrent` flag as well. Storing "current" in two
+places (the plan's flag *and* the subscription) is how they ended up
+disagreeing during development: Starter was flagged current while the
+subscription still pointed at Growth. The flag has been **removed**. A plan
+can't know whether it's current, because that depends on who's looking, so the
+subscription is now the only source.
 
 ---
 
 ## 3. `PlanCard.tsx` — one pricing card
 
 ```tsx
-<div className={clsx(
-  'plan-card',
-  plan.isPopular && 'plan-card--popular',
-  plan.isCurrent && 'plan-card--current'
-)}>
+interface PlanCardProps {
+  plan: Plan;
+  currentPlan: Plan;
+  seatsInUse: number;
+  onSelect: (plan: Plan) => void;
+}
+
+const isCurrent = plan.id === currentPlan.id;
+const isUpgrade = plan.price > currentPlan.price;
+const hasTooFewSeats = plan.seatLimit !== null && seatsInUse > plan.seatLimit;
+
+const buttonLabel = isCurrent
+  ? 'Current Plan'
+  : hasTooFewSeats
+    ? `Needs ${seatsInUse} seats`
+    : `${isUpgrade ? 'Upgrade' : 'Downgrade'} to ${plan.name}`;
+```
+
+```tsx
+<div className={clsx('plan-card', plan.isPopular && 'plan-card--popular', isCurrent && 'plan-card--current')}>
   {plan.isPopular && <div className="plan-card__popular-badge">Most Popular</div>}
   ...
-  <ul className="plan-card__features">
-    {plan.features.map((feature) => (
-      <li key={feature}>…<Check size={14} />{feature}</li>
-    ))}
-  </ul>
+  <span className="plan-card__price-interval">/ {PLAN_INTERVAL_LABEL[plan.interval]}</span>
+  ...
   <Button
-    variant={plan.isCurrent ? 'secondary' : 'primary'}
-    disabled={plan.isCurrent}
+    variant={isCurrent || !isUpgrade ? 'secondary' : 'primary'}
+    disabled={isCurrent || hasTooFewSeats}
+    onClick={() => onSelect(plan)}
   >
-    {plan.isCurrent ? 'Current Plan' : `Upgrade to ${plan.name}`}
+    {buttonLabel}
   </Button>
 </div>
 ```
 
 Things to notice:
 
+- **The card works out its own state from props.** It gets the plan it shows
+  and the plan the customer is on, and calculates `isCurrent` and `isUpgrade`
+  from them. Nothing is stored twice.
+- **The label is honest about what the button does.** A cheaper plan says
+  "Downgrade", not "Upgrade". Downgrades use the quieter `secondary` style, so
+  the more expensive options stand out, which is a common pricing-page pattern.
+- **Business rules live in one place.** You can't move to a plan with fewer
+  seats than your team already uses. Instead of letting the click happen and
+  showing an error afterwards, the button is disabled and says why
+  ("Needs 12 seats").
+- **`onSelect` hands the decision up.** The card doesn't change the
+  subscription itself. It reports "this plan was chosen", and the page decides
+  what that means.
 - **Conditional rendering with `&&`**: the "Most Popular" badge only exists in
   the DOM when `isPopular` is true.
 - **`key={feature}`**: the feature text is unique within a plan, so it can be the
   key. Avoid the array index as a key when items can be reordered or removed.
-- **One flag drives three things**: `isCurrent` sets the border colour (through
-  the `--current` class), the button style, and whether the button is disabled.
-  A button that would do nothing should be disabled, not just labelled
-  differently.
-- **Template literal for the label**: `` `Upgrade to ${plan.name}` ``.
+- **`PLAN_INTERVAL_LABEL`** (in `constants`) turns `'monthly'` into "month". The
+  current plan card uses the same map, so both say "/ month".
 
 ### The floating "Most Popular" badge
 
@@ -183,7 +212,8 @@ const STATUS_BADGE: Record<Subscription['status'], { label: string; variant: ...
 
 `past_due` is a fine value for code but not something to show a user, so the
 table maps each status to a human label *and* a badge colour in one place.
-`INTERVAL_LABEL` does the same to turn `'monthly'` into "/ month".
+The shared `PLAN_INTERVAL_LABEL` map does the same to turn `'monthly'` into
+"/ month".
 
 ### Label/value pairs with `<dl>`
 
@@ -232,27 +262,91 @@ const isNearSeatLimit = seatUsage !== null && seatUsage >= SEAT_WARNING_THRESHOL
 
 ---
 
-## 5. `pages/Billing/index.tsx` — the page
+## 5. The page and shared subscription state
+
+### Why the subscription lives in a context
+
+Changing plan has to update **two places**: the Billing page and the "Plan"
+line in the profile menu in the header. If the page kept the subscription in
+its own `useState`, the header would still show the old plan, and the page's
+state would also be lost when you navigated away.
+
+So the subscription lives in **`SubscriptionContext`**, built the same way as
+`NotificationsContext` (see the notifications tutorial):
 
 ```tsx
-const subscription = mockSubscription;
+export const SubscriptionProvider = ({ children, initialSubscription = mockSubscription }) => {
+  const [subscription, setSubscription] = useState<Subscription>(initialSubscription);
+
+  const changePlan = useCallback((plan: Plan) => {
+    setSubscription((current) => ({ ...current, plan }));
+  }, []);
+
+  const value = useMemo(() => ({ subscription, changePlan }), [subscription, changePlan]);
+  return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
+};
+```
+
+- **`{ ...current, plan }`** copies the subscription and replaces only the plan.
+  Status, dates and seats stay the same.
+- The provider wraps the routes in `App.tsx`. `Navbar` reads
+  `useSubscription()` and passes `subscription.plan.name` to the profile menu,
+  so the header updates the moment the plan changes.
+- With a backend, `changePlan` would also send the change to the server.
+  Components wouldn't change, because they only ever call `changePlan(plan)`.
+
+### `pages/Billing/index.tsx`
+
+```tsx
+const { subscription, changePlan } = useSubscription();
+const [confirmation, setConfirmation] = useState<string | null>(null);
 const plansSectionRef = useRef<HTMLDivElement>(null);
 
-const scrollToPlans = () => {
-  plansSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+const handleSelectPlan = (plan: Plan) => {
+  changePlan(plan);
+  setConfirmation(`You're now on the ${plan.name} plan.`);
 };
 
 <CurrentPlanCard subscription={subscription} onChangePlan={scrollToPlans} />
 
 <div className="billing__section" ref={plansSectionRef}>
+  <div role="status" className="billing__status">
+    {confirmation && <p className="billing__confirmation">…{confirmation}</p>}
+  </div>
   {mockPlans.map((plan) => (
     <PlanCard
       key={plan.id}
-      plan={{ ...plan, isCurrent: plan.id === subscription.plan.id }}
+      plan={plan}
+      currentPlan={subscription.plan}
+      seatsInUse={subscription.seats}
+      onSelect={handleSelectPlan}
     />
   ))}
 </div>
 ```
+
+### Both cards update together
+
+When you click "Upgrade to Growth", `changePlan` updates the context, and React
+re-renders everything that reads it:
+
+- the **current plan card** shows Growth, $79, and the seat meter re-measures
+  against 25 seats ("4 of 25 used", so the amber warning disappears)
+- the **pricing grid** moves the teal outline to Growth, and Starter's button
+  becomes "Downgrade to Starter"
+- the **profile menu** shows "Plan: Growth"
+
+None of these components talk to each other. They all read the same state.
+This is the rule used throughout the project: **one source of truth,
+everything else calculated from it.**
+
+### The confirmation message
+
+`role="status"` is a **live region**: screen readers announce text that appears
+inside it, without moving focus. The wrapper `<div role="status">` is always
+rendered and only its *contents* change, because a live region that appears
+together with its text may not be announced. The empty wrapper is hidden with
+`.billing__status:empty { display: none; }`, so it doesn't add a gap.
 
 ### `useRef` for the DOM
 
@@ -266,21 +360,6 @@ The card gets a callback rather than the ref itself. `CurrentPlanCard` only
 knows "someone wants to change plan", and the page decides that means
 scrolling. Later it could open a modal instead, without touching the card.
 
-### One source of truth for "current"
-
-```tsx
-plan={{ ...plan, isCurrent: plan.id === subscription.plan.id }}
-```
-
-Instead of trusting each plan's stored `isCurrent` flag, the page **works it
-out** from the subscription. `{ ...plan, isCurrent: ... }` makes a copy with that
-one field overwritten, leaving the original `mockPlans` untouched. The pricing
-grid and the current plan card now read from the same place, so they can't
-disagree.
-
-This is the same rule as on the other pages: if one value can be calculated
-from another, calculate it rather than storing both.
-
 ---
 
 ## 6. Styles
@@ -289,7 +368,12 @@ from another, calculate it rather than storing both.
   are `grid-template-columns: repeat(3, 1fr)`, which gives three equal columns.
 - **`plancard.scss`**: `--popular` gets a purple border and a faint purple tint
   (`rgba(108, 99, 255, 0.05)`, the primary colour at 5% opacity), and
-  `--current` gets the teal accent border.
+  `--current` gets the teal accent border. `.plan-card:hover` (a class *plus* a
+  pseudo-class) is more specific than `.plan-card--current` (one class), so
+  hovering used to turn the current plan's border purple. Listing
+  `&--current:hover` alongside `&--current` keeps it teal.
+- The confirmation message is a soft teal box (`rgba` of the accent colour)
+  with a check icon.
 - **`current-plan-card.scss`**: the details row collapses from three columns to
   one below 768px. The meter is a rounded track (`overflow: hidden` clips
   the fill to the rounded corners) with a `transition: width`, so it animates if
@@ -297,7 +381,7 @@ from another, calculate it rather than storing both.
 
 ---
 
-## 7. Tests — `CurrentPlanCard.test.tsx`
+## 7. Tests — `CurrentPlanCard.test.tsx` and `Billing.test.tsx`
 
 ```tsx
 const renderCard = (overrides: Partial<Subscription> = {}) => {
@@ -317,27 +401,35 @@ meter), the cancelled state, and the button callback. The card's props make
 these states easy to set up, which is another reason to keep components
 free of imported data.
 
+**`Billing.test.tsx`** renders the real page inside a `SubscriptionProvider`
+with a chosen `initialSubscription`, and checks:
+
+| Test | What it checks |
+|---|---|
+| labels | On Starter: "Current Plan" is disabled, and "Upgrade to Growth" and "Upgrade to Enterprise" are enabled |
+| upgrading | Clicking "Upgrade to Growth" makes Growth current, shows the confirmation, offers "Downgrade to Starter", and the meter reads "4 of 25 used" |
+| seat rule | On Growth with 12 seats, Starter's button says "Needs 12 seats" and is disabled |
+
 ---
 
-## Things worth fixing
+## Fixed since this tutorial was first written
 
-| Where | Issue | Fix |
+| Where | What was wrong | What changed |
 |---|---|---|
-| `PlanCard.tsx` | "Upgrade to …" buttons don't do anything (`onSelect` is commented out) | See "Where to take it next" |
-| `plancard.scss` | `.plan-card:hover` is more specific than `.plan-card--current`, so hovering the current plan turns its teal border purple | Add `&--current:hover { border-color: $color-accent; }` |
-| `billings.scss` | Three fixed columns get very narrow on small screens | Add a media query that drops to 1 column below ~900px |
-| `PlanCard.tsx` | Shows "/ monthly" while the current plan card shows "/ month" | Reuse the same `INTERVAL_LABEL` map in both |
-| `types/index.ts` | `Plan.isCurrent` is now ignored by the page (it's calculated from the subscription) | Remove it from the data and calculate it everywhere, or rename the prop to make the intent clear |
+| `PlanCard.tsx` | "Upgrade to …" buttons did nothing | They switch plans through `SubscriptionContext` (section 5) |
+| `plancard.scss` | Hovering the current plan turned its teal border purple | `&--current:hover` keeps it teal |
+| `PlanCard.tsx` | "/ monthly" vs "/ month" on the current plan card | Both use `PLAN_INTERVAL_LABEL` |
+| `types/index.ts` | `Plan.isCurrent` duplicated what the subscription says | Removed. `PlanCard` works it out from `currentPlan` |
+
+Still open: **`billings.scss` has three fixed columns** that get very narrow on
+small screens. That's part of the planned mobile layout work.
 
 ## Where to take it next
 
-- **Make "Upgrade" work**: move the subscription into state with
-  `const [subscription, setSubscription] = useState(mockSubscription)`, pass
-  `onSelect` to `PlanCard`, and in the handler call
-  `setSubscription({ ...subscription, plan })`. Both cards update together
-  because they read from the same state.
 - **Confirm before changing**: show a modal with the price difference before
-  switching plans.
+  switching plans. Right now a click switches immediately.
+- **Remember the choice**: a page refresh resets to Starter. Saving the
+  subscription in `localStorage` (or on a server) would keep it.
 - **Monthly/yearly toggle**: add a switch above the grid that shows yearly
   prices (for example, two months free).
 - **Invoice history**: `mockInvoices` already exists. Show it in a table below

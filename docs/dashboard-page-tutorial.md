@@ -72,7 +72,7 @@ Routes are described **as data** rather than written out as JSX:
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 
 export const routeConfig: RouteConfig[] = [
-  { path: ROUTES.DASHBOARD, component: Dashboard, label: 'Dashboard' },
+  { path: ROUTES.DASHBOARD, component: Dashboard },
   ...
 ];
 ```
@@ -170,13 +170,13 @@ Three ideas run through all of it:
    everything uses the same 4px-based scale (`$space-1` = 4px … `$space-12` =
    48px).
 2. **BEM naming**: `block__element--modifier`, for example
-   `metric-card__trend--up`. Class names describe *what* something is, so
+   `metric-card__trend--positive`. Class names describe *what* something is, so
    styles don't accidentally leak between components. SCSS's `&` keeps it short:
 
    ```scss
    .metric-card {
      &__trend {          // → .metric-card__trend
-       &--up { ... }     // → .metric-card__trend--up
+       &--positive { ... }  // → .metric-card__trend--positive
      }
    }
    ```
@@ -198,6 +198,8 @@ export interface MetricCard {
   change: number;                        // percentage, positive or negative
   trend: 'up' | 'down' | 'neutral';
   format: 'currency' | 'percentage' | 'number';
+  // false for metrics where a fall is good news, e.g. churn
+  higherIsBetter?: boolean;
 }
 ```
 
@@ -248,19 +250,36 @@ const TrendIcon =
 ```
 
 Picking a **component** into a variable and rendering it is the same trick the
-Sidebar uses for icons. `formatValue()` switches on `metric.format`, and
-**`clsx`** builds the class list:
+Sidebar uses for icons. `formatValue()` switches on `metric.format`.
+
+**The colour shows whether the change is good news, not which way it moved.**
+Revenue going down is bad (red), but churn going down is good (green). The
+arrow follows the direction, and the colour follows the meaning:
 
 ```tsx
+const isGoodChange =
+  metric.trend === 'up'
+    ? metric.higherIsBetter !== false   // a rise is good unless lower is better
+    : metric.higherIsBetter === false;  // a fall is good only when lower is better
+
 className={clsx(
   'metric-card__trend',
-  metric.trend === 'up' && 'metric-card__trend--up',
-  metric.trend === 'down' && 'metric-card__trend--down',
+  metric.trend === 'neutral'
+    ? 'metric-card__trend--neutral'
+    : isGoodChange
+      ? 'metric-card__trend--positive'
+      : 'metric-card__trend--negative'
 )}
 ```
 
-`clsx` drops anything falsy, so `false && 'x'` adds nothing. It's tidier than
-building class strings with template literals.
+`higherIsBetter` is **optional and defaults to "true"** (`!== false` treats
+`undefined` as true), so only metrics where lower is better, like
+`Churn Rate` in `mockMetrics`, need to set it. The classes are named
+`--positive`/`--negative` rather than `--up`/`--down` because they describe
+the meaning, not the direction.
+
+**`clsx`** builds the class list. It drops anything falsy, so `false && 'x'`
+adds nothing, which is tidier than building class strings with template literals.
 
 (The optional `comparisonLabel` prop was added later for the Analytics page. It
 defaults to "than last month", so the Dashboard didn't need to change.)
@@ -346,7 +365,7 @@ const Button = ({ variant = 'primary', size = 'md', isLoading = false, children,
       {mockMetrics.map((metric) => <MetricCard key={metric.label} metric={metric} />)}
     </div>
     <div className="dashboard__grid">
-      <Card title="Renenue vs Target"><RevenueChart data={mockRevenueChart} /></Card>
+      <Card title="Revenue vs Target"><RevenueChart data={mockRevenueChart} /></Card>
       <Card title="Recent Users"><RecentUsers users={mockRecentUsers} /></Card>
     </div>
   </div>
@@ -362,22 +381,24 @@ The layout lives in `dashboard.scss`: `repeat(4, 1fr)` for the KPI row and
 
 ---
 
-## Things worth fixing
+## Fixed since this tutorial was first written
 
-I found these while reading the code for this tutorial. None of them break the
-page:
+These issues came up while writing this guide and have since been fixed:
 
-| Where | Issue | Fix |
+| Where | What was wrong | What changed |
 |---|---|---|
-| `pages/Dashboard/index.tsx` | Card title typo: "Renenue vs Target" | "Revenue vs Target" |
-| `MetricCard.tsx` | `trend === 'neutral'` adds the `--down` class (red). A `--neutral` style already exists in `metrics.scss` | Use `'metric-card__trend--neutral'` |
-| `mockMetrics` | Churn going **down** is good news, but it shows in red, because the colour follows the arrow direction rather than whether the change is good or bad | Add something like `positiveIsGood: false` to the type and pick the colour from that |
-| `RevenueChart.tsx` | `contentStyle` on `<Tooltip>` is ignored when you pass a custom `content` | Delete it, since the styling lives in `.revenue__chart-tooltip` |
-| `styles/global.scss` | `var(--color-bg)` and `var(--color-text-secondary)` are CSS custom properties that are never defined (the project uses SCSS `$variables`), so those two lines do nothing | Use `$color-bg` and `$color-text-secondary` |
-| `recent-users.scss` | `text-overflow: ellipse` isn't valid CSS, so long names won't get an "…" | `ellipsis` |
-| `dashboard.scss` | No media queries, so four KPI cards squeeze together on small screens | Copy the breakpoints from `analytics.scss` |
-| `src/index.css` | Left over from Create React App and never imported | Delete it |
-| `config/routes.tsx` | `label` is never used (the sidebar reads `NAV_ITEMS`) and has typos (`'Analytcs'`, `' User Management'`) | Remove `label`, or build `NAV_ITEMS` from `routeConfig` so routes are defined in one place |
+| `pages/Dashboard/index.tsx` | Card title typo "Renenue vs Target" | Now "Revenue vs Target" |
+| `MetricCard.tsx` | A `neutral` trend got the red `--down` class | Uses `--neutral` |
+| `MetricCard.tsx` + `mockMetrics` | Churn going **down** showed in red | Colour now follows `higherIsBetter` (see section 7) |
+| `RevenueChart.tsx` | `contentStyle` on `<Tooltip>` was ignored because a custom `content` is passed | Removed |
+| `styles/global.scss` | `var(--color-bg)` / `var(--color-text-secondary)` were never defined | Use the SCSS `$color-bg` / `$color-text-secondary` |
+| `recent-users.scss` | `text-overflow: ellipse` isn't valid CSS | `ellipsis` |
+| `src/index.css` | Create React App leftover, never imported | Deleted |
+| `config/routes.tsx` | Unused `label` field with typos | Removed (the sidebar reads `NAV_ITEMS`) |
+
+Still open: **`dashboard.scss` has no media queries**, so the four KPI cards
+squeeze together on small screens. That's part of the planned mobile layout
+work.
 
 ## Where to take it next
 

@@ -21,6 +21,13 @@ const MetricCard = ({
   metric,
   comparisonLabel = 'than last month',
 }: MetricCardProps) => {
+  // Colour shows whether the change is good news, not which way it moved:
+  // churn going down is green, revenue going down is red
+  const isGoodChange =
+    metric.trend === 'up'
+      ? metric.higherIsBetter !== false
+      : metric.higherIsBetter === false;
+
   const TrendIcon =
     metric.trend === 'up'
       ? TrendingUp
@@ -37,9 +44,11 @@ const MetricCard = ({
       <div
         className={clsx(
           'metric-card__trend',
-          metric.trend === 'up' && 'metric-card__trend--up',
-          metric.trend === 'down' && 'metric-card__trend--down',
-          metric.trend === 'neutral' && 'metric-card__trend--down'
+          metric.trend === 'neutral'
+            ? 'metric-card__trend--neutral'
+            : isGoodChange
+              ? 'metric-card__trend--positive'
+              : 'metric-card__trend--negative'
         )}
       >
         <TrendIcon size={18} />

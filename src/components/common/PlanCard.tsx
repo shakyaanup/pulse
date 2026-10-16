@@ -1,24 +1,43 @@
 import { Check } from 'lucide-react';
 import clsx from 'clsx';
 import { Plan } from '../../types';
+import { PLAN_INTERVAL_LABEL } from '../../constants';
 import { formatCurrency } from '../../utils';
 import Button from './Button';
 
 interface PlanCardProps {
   plan: Plan;
-  //onSelect: (planId: string) => void;
+  currentPlan: Plan;
+  seatsInUse: number;
+  onSelect: (plan: Plan) => void;
 }
 
-const PlanCard = ({ plan }: PlanCardProps) => {
+const PlanCard = ({
+  plan,
+  currentPlan,
+  seatsInUse,
+  onSelect,
+}: PlanCardProps) => {
+  const isCurrent = plan.id === currentPlan.id;
+  const isUpgrade = plan.price > currentPlan.price;
+  // Can't move to a plan with fewer seats than the team already uses
+  const hasTooFewSeats = plan.seatLimit !== null && seatsInUse > plan.seatLimit;
+
+  const buttonLabel = isCurrent
+    ? 'Current Plan'
+    : hasTooFewSeats
+      ? `Needs ${seatsInUse} seats`
+      : `${isUpgrade ? 'Upgrade' : 'Downgrade'} to ${plan.name}`;
+
   return (
     <div
       className={clsx(
         'plan-card',
         plan.isPopular && 'plan-card--popular',
-        plan.isCurrent && 'plan-card--current'
+        isCurrent && 'plan-card--current'
       )}
     >
-      {/* Popular badge - only renders when isPopulat is true */}
+      {/* Popular badge - only renders when isPopular is true */}
       {plan.isPopular && (
         <div className="plan-card__popular-badge">Most Popular</div>
       )}
@@ -30,7 +49,9 @@ const PlanCard = ({ plan }: PlanCardProps) => {
           <span className="plan-card__price-value">
             {formatCurrency(plan.price)}
           </span>
-          <span className="plan-card__price-interval">/ {plan.interval}</span>
+          <span className="plan-card__price-interval">
+            / {PLAN_INTERVAL_LABEL[plan.interval]}
+          </span>
         </div>
       </div>
 
@@ -48,11 +69,12 @@ const PlanCard = ({ plan }: PlanCardProps) => {
 
       {/* CTA button - changes based on plan state */}
       <Button
-        variant={plan.isCurrent ? 'secondary' : 'primary'}
+        variant={isCurrent || !isUpgrade ? 'secondary' : 'primary'}
         size="md"
-        disabled={plan.isCurrent}
+        disabled={isCurrent || hasTooFewSeats}
+        onClick={() => onSelect(plan)}
       >
-        {plan.isCurrent ? 'Current Plan' : `Upgrade to ${plan.name}`}
+        {buttonLabel}
       </Button>
     </div>
   );

@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { Subscription } from '../../types';
+import { PLAN_INTERVAL_LABEL } from '../../constants';
 import { formatCurrency, formatDate } from '../../utils';
 import Badge from './Badge';
 import Button from './Button';
@@ -17,11 +18,6 @@ const STATUS_BADGE: Record<
   trialing: { label: 'Trial', variant: 'neutral' },
   past_due: { label: 'Past due', variant: 'warning' },
   cancelled: { label: 'Cancelled', variant: 'danger' },
-};
-
-const INTERVAL_LABEL: Record<Subscription['plan']['interval'], string> = {
-  monthly: 'month',
-  yearly: 'year',
 };
 
 // Above this share of seats used, the meter turns amber as an upgrade nudge
@@ -54,7 +50,7 @@ const CurrentPlanCard = ({
             {formatCurrency(plan.price)}
           </span>
           <span className="current-plan__price-interval">
-            / {INTERVAL_LABEL[plan.interval]}
+            / {PLAN_INTERVAL_LABEL[plan.interval]}
           </span>
         </div>
       </div>

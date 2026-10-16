@@ -22,3 +22,20 @@
   grid-template-columns: repeat(3, 1fr);
   gap: $space-5;
 }
+
+.billing__status:empty {
+  display: none;
+}
+
+.billing__confirmation {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3 $space-4;
+  border: 1px solid rgba(34, 211, 165, 0.3);
+  border-radius: $radius-md;
+  background-color: rgba(34, 211, 165, 0.1);
+  color: $color-accent;
+  font-size: 13px;
+  font-weight: 500;
+}

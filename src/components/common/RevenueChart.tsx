@@ -94,15 +94,7 @@ const RevenueChart = ({ data }: RevenueChartProps) => {
           tickLine={false}
           tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
         />
-        <Tooltip
-          contentStyle={{
-            backgroundColor: '#1a1a2e',
-            border: '1px solid #2e2e4a',
-            borderRadius: '8px',
-            color: '#f8f8ff',
-          }}
-          content={<CustomTooltip />}
-        />
+        <Tooltip content={<CustomTooltip />} />
         <Area
           type="monotone"
           dataKey="revenue"

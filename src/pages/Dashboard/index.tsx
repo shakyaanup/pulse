@@ -21,7 +21,7 @@ const Dashboard = () => {
           ))}
         </div>
         <div className="dashboard__grid">
-          <Card title="Renenue vs Target">
+          <Card title="Revenue vs Target">
             <RevenueChart data={mockRevenueChart} />
           </Card>
 

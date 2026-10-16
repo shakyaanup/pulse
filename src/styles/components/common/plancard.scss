@@ -18,7 +18,10 @@
     background-color: rgba(108, 99, 255, 0.05);
   }
 
-  &--current {
+  // :hover is more specific than a single class, so the current plan needs
+  // its own hover rule to keep the teal border
+  &--current,
+  &--current:hover {
     border-color: $color-accent;
   }
 

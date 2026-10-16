@@ -160,7 +160,8 @@ interface ProfileMenuProps {
 
 ```tsx
 // Navbar.tsx
-<ProfileMenu user={mockCurrentUser} planName={mockSubscription.plan.name} />
+const { subscription } = useSubscription();
+<ProfileMenu user={mockCurrentUser} planName={subscription.plan.name} />
 ```
 
 The menu doesn't import mock data. `Navbar` passes it in. So:
@@ -170,8 +171,9 @@ The menu doesn't import mock data. `Navbar` passes it in. So:
 - when real sign-in arrives, only `Navbar` changes: it would read the user from
   an auth context instead of `mockCurrentUser`
 
-`planName` comes from `mockSubscription`, the same source the Billing page uses,
-so the menu and the Billing page always show the same plan.
+`planName` comes from `SubscriptionContext`, the same shared state the Billing
+page uses. When you switch plans on Billing, the menu shows the new plan
+straight away (see the Billing tutorial).
 
 ### The trigger button
 

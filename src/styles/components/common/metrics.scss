@@ -35,9 +35,9 @@
     font-size: 12px;
     font-weight: 500;
 
-    &--up { color: $color-accent; }
+    &--positive { color: $color-accent; }
 
-    &--down { color: $color-danger; }
+    &--negative { color: $color-danger; }
 
     &--neutral { color: $color-text-muted; }
   }

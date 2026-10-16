@@ -34,7 +34,7 @@ button {
 
 .app {
   min-height: 100vh;
-  background-color: var(--color-bg);
+  background-color: $color-bg;
 }
 
 .page-loader {
@@ -42,7 +42,7 @@ button {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  color: var(--color-text-secondary);
+  color: $color-text-secondary;
   font-size: 14px;
   letter-spacing: 0.05em;
 }

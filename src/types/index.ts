@@ -18,7 +18,6 @@ export interface Plan {
   features: string[];
   seatLimit: number | null; // null = unlimited
   isPopular: boolean;
-  isCurrent: boolean;
 }
 
 export interface Subscription {
@@ -36,6 +35,8 @@ export interface MetricCard {
   change: number; // percentage, positive or negative
   trend: 'up' | 'down' | 'neutral';
   format: 'currency' | 'percentage' | 'number';
+  // false for metrics where a fall is good news, e.g. churn
+  higherIsBetter?: boolean;
 }
 
 export interface Invoice {

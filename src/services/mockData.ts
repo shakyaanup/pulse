@@ -29,6 +29,7 @@ export const mockMetrics: MetricCard[] = [
     change: -0.5,
     trend: 'down',
     format: 'percentage',
+    higherIsBetter: false,
   },
   {
     label: 'Avg Revenue Per User',
@@ -168,7 +169,6 @@ export const mockPlans: Plan[] = [
     ],
     seatLimit: 5,
     isPopular: false,
-    isCurrent: true,
   },
   {
     id: 'growth',
@@ -186,7 +186,6 @@ export const mockPlans: Plan[] = [
     ],
     seatLimit: 25,
     isPopular: true,
-    isCurrent: false,
   },
   {
     id: 'enterprise',
@@ -205,7 +204,6 @@ export const mockPlans: Plan[] = [
     ],
     seatLimit: null,
     isPopular: false,
-    isCurrent: false,
   },
 ];
 

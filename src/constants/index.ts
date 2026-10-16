@@ -31,3 +31,8 @@ export const USER_STATUS_BADGE: Record<
   inactive: 'warning',
   suspended: 'danger',
 };
+
+export const PLAN_INTERVAL_LABEL: Record<'monthly' | 'yearly', string> = {
+  monthly: 'month',
+  yearly: 'year',
+};
