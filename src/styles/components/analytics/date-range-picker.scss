@@ -6,6 +6,14 @@
   border: 1px solid $color-border;
   border-radius: $radius-md;
 
+  @include mobile {
+    display: flex;
+
+    .date-range-picker__option {
+      flex: 1;
+    }
+  }
+
   &__option {
     background: none;
     border: none;

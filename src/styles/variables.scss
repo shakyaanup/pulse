@@ -40,3 +40,7 @@ $radius-full: 9999px;
 $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
 $shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
 $shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+/* Breakpoints (max-widths) */
+$bp-mobile: 767px;   // phones
+$bp-tablet: 1023px;  // tablets in portrait, e.g. iPad
+$bp-laptop: 1199px;  // small laptops, iPad landscape

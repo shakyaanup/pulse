@@ -84,4 +84,78 @@
     color: $color-text-muted;
     font-size: 14px;
   }
+
+  // Below laptop width the five columns don't fit, so each row becomes a
+  // small card -- two per row on tablets, one on phones:
+  //   [avatar + name]      [status]
+  //   [role]                [joined]
+  //   [actions .................]
+  @include laptop-down {
+    display: block;
+
+    thead {
+      @include visually-hidden; // still read by screen readers
+    }
+
+    tbody {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: $space-3;
+    }
+
+    tbody tr {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        'user status'
+        'role date'
+        'actions actions';
+      align-items: center;
+      gap: $space-2 $space-3;
+      padding: $space-4;
+      border: 1px solid $color-border;
+      border-radius: $radius-md;
+      background-color: $color-surface-raised;
+
+      &:last-child {
+        border-bottom: 1px solid $color-border;
+      }
+
+      // The loading / empty message row spans the full width, unstyled
+      &:has(.user-table__empty) {
+        grid-column: 1 / -1;
+        display: block;
+        border: none;
+        background: none;
+      }
+    }
+
+    td {
+      display: block;
+      padding: 0;
+    }
+
+    &__cell--user { grid-area: user; min-width: 0; }
+    &__cell--status { grid-area: status; justify-self: end; }
+    &__cell--role { grid-area: role; }
+    &__cell--date { grid-area: date; text-align: right; }
+    &__cell--actions { grid-area: actions; padding-top: $space-1; }
+
+    &__user-info { min-width: 0; }
+
+    &__email {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &__empty {
+      padding: $space-8 0;
+    }
+
+    &__actions .btn {
+      flex: 1;
+    }
+  }
 }

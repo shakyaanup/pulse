@@ -56,7 +56,7 @@
     color: $color-text-primary;
   }
 
-  @media (max-width: 1200px) {
+  @include laptop-down {
     &__metrics {
       grid-template-columns: repeat(2, 1fr);
     }
@@ -67,9 +67,16 @@
     }
   }
 
-  @media (max-width: 600px) {
-    &__metrics {
-      grid-template-columns: 1fr;
+  &__metrics {
+    @include kpi-scroll-row;
+  }
+
+  @include mobile {
+
+    // Stack the title above a full-width range picker
+    &__header {
+      flex-direction: column;
+      align-items: stretch;
     }
   }
 }

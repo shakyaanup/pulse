@@ -1,3 +1,62 @@
+// Responsive helpers -- use these instead of writing raw media queries, so
+// every file breaks at the same widths:
+//   .thing { @include mobile { ... } }
+@mixin mobile {
+  @media (max-width: $bp-mobile) {
+    @content;
+  }
+}
+
+@mixin tablet-down {
+  @media (max-width: $bp-tablet) {
+    @content;
+  }
+}
+
+@mixin laptop-down {
+  @media (max-width: $bp-laptop) {
+    @content;
+  }
+}
+
+// Phones: turn a grid of KPI cards into one swipeable row. Each card is
+// ~78% wide so the next one peeks in, hinting that the row scrolls.
+@mixin kpi-scroll-row {
+  @include mobile {
+    display: flex;
+    gap: $space-3;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory; // settle on a card after each swipe
+    scroll-padding: 0 $space-4;    // ...lined up with the page content
+    // Run to the screen edges, keeping the first card aligned with the page
+    margin: 0 (-$space-4);
+    padding: 0 $space-4;
+    scrollbar-width: none; // Firefox
+
+    &::-webkit-scrollbar {
+      display: none; // Chrome, Safari
+    }
+
+    > * {
+      flex: 0 0 78%;
+      scroll-snap-align: start;
+    }
+  }
+}
+
+// Hidden visually but still read by screen readers
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 // Shared look for header dropdown panels (notifications, profile menu).
 // Usage: .my-panel { @include dropdown-panel(320px); }
 @mixin dropdown-panel($width) {
@@ -13,6 +72,17 @@
   z-index: 20;
   overflow: hidden;
   animation: dropdown-in 0.12s ease-out;
+
+  // On phones the trigger isn't at the screen edge, so a panel anchored to it
+  // would hang off the left side. Pin it to the viewport instead.
+  @include mobile {
+    position: fixed;
+    top: calc(64px + #{$space-2}); // just below the navbar
+    left: $space-4;
+    right: $space-4;
+    width: auto;
+    max-width: none;
+  }
 }
 
 @keyframes dropdown-in {

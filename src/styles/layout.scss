@@ -7,6 +7,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0; // let wide content shrink instead of widening the page
   overflow: hidden;
 }
 
@@ -14,6 +15,29 @@
   flex: 1;
   padding: $space-6;
   overflow-y: auto;
+
+  @include mobile {
+    padding: $space-4;
+  }
+}
+
+// Dims the page behind the phone drawer; clicking it closes the drawer
+.layout__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background-color: rgba(0, 0, 0, 0.6);
+  animation: overlay-in 0.2s ease-out;
+
+  @media (min-width: #{$bp-mobile + 1}) {
+    display: none;
+  }
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
 }
 
 /*======= Sidebar ==========*/
@@ -27,6 +51,8 @@
   padding: $space-6 0;
   position: sticky;
   top: 0;
+  height: 100vh;
+  flex-shrink: 0;
 
   &__logo {
     display: flex;
@@ -40,9 +66,26 @@
       max-width: 40px; 
     }
 
-    span {
-      font-size: 22px;
-      font-weight: 700;
+  }
+
+  &__app-name {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  // Only visible inside the phone drawer
+  &__close {
+    display: none;
+    margin-left: auto;
+    padding: $space-2;
+    background: none;
+    border: none;
+    border-radius: $radius-sm;
+    color: $color-text-secondary;
+
+    &:hover {
+      background-color: $color-surface-raised;
+      color: $color-text-primary;
     }
   }
 
@@ -81,6 +124,67 @@
   }
 }
 
+/* Tablet: collapse to an icon-only rail */
+@media (min-width: #{$bp-mobile + 1}) and (max-width: $bp-tablet) {
+  .sidebar {
+    width: 72px;
+
+    &__logo {
+      justify-content: center;
+      padding: 0 0 $space-6;
+    }
+
+    &__app-name {
+      display: none;
+    }
+
+    &__nav {
+      padding: 0 $space-2;
+    }
+
+    &__link {
+      justify-content: center;
+      padding: $space-3;
+    }
+
+    // Hidden visually but kept for screen readers; the link's title
+    // attribute shows the name as a tooltip on hover
+    &__label {
+      @include visually-hidden;
+    }
+  }
+}
+
+/* Phone: off-canvas drawer opened from the navbar's menu button */
+@include mobile {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 50;
+    width: min(280px, 85vw);
+    box-shadow: $shadow-lg;
+    transform: translateX(-100%);
+    // visibility (not just transform) keeps the hidden links out of the
+    // Tab order; the delay lets the slide-out finish before it applies
+    visibility: hidden;
+    transition:
+      transform 0.25s ease,
+      visibility 0s linear 0.25s;
+
+    &--open {
+      transform: translateX(0);
+      visibility: visible;
+      transition: transform 0.25s ease;
+    }
+
+    &__close {
+      display: flex;
+    }
+  }
+}
+
 /*======= Navbar ==========*/
 .navbar {
   height: 64px;
@@ -93,19 +197,44 @@
   top: 0;
   z-index: 10;
   padding: 0 $space-6;
+  gap: $space-3;
+
+  @include mobile {
+    padding: 0 $space-4;
+  }
 }
+
+.navbar__start {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  min-width: 0;
+}
+
 
 .navbar__title {
   font-size: 18px;
   font-weight: 600;
   color: $color-text-primary;
   letter-spacing: -0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @include mobile {
+    font-size: 16px;
+  }
 }
 
 .navbar__actions {
   display: flex;
   align-items: center;
   gap: $space-4;
+  flex-shrink: 0;
+
+  @include mobile {
+    gap: $space-3;
+  }
 }
 
 .navbar__icon-btn {
@@ -123,4 +252,14 @@
 .navbar__icon-btn:hover {
   background-color: $color-surface-raised;
   color: $color-text-primary;
+}
+
+// Must come after .navbar__icon-btn, which sets display: flex
+.navbar__menu-btn {
+  display: none;
+  margin-left: -$space-2; // line the icon up with the page content
+
+  @include mobile {
+    display: flex;
+  }
 }

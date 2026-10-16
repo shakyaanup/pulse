@@ -15,7 +15,12 @@ const Dashboard = () => {
   return (
     <PageWrapper pageTitle="Dashboard">
       <div className="dashboard">
-        <div className="dashboard__metrics">
+        <div
+          className="dashboard__metrics"
+          role="region"
+          aria-label="Key metrics"
+          tabIndex={0}
+        >
           {mockMetrics.map((metric) => (
             <MetricCard key={metric.label} metric={metric} />
           ))}

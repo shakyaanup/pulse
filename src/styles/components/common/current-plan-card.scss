@@ -135,7 +135,7 @@
     gap: $space-3;
   }
 
-  @media (max-width: 768px) {
+  @include mobile {
     &__details {
       grid-template-columns: 1fr;
     }

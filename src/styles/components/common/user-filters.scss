@@ -35,6 +35,24 @@
     align-items: center;
     gap: $space-3;
     flex-wrap: wrap;
+
+    // Phones: search on its own row, the two selects share the next one
+    @include mobile {
+      width: 100%;
+
+      .user-filters__search {
+        flex: 1 1 100%;
+      }
+
+      .user-filters__input {
+        width: 100%;
+      }
+
+      .user-filters__select {
+        flex: 1;
+        min-width: 0;
+      }
+    }
   }
 
   &__search {

@@ -396,13 +396,11 @@ These issues came up while writing this guide and have since been fixed:
 | `src/index.css` | Create React App leftover, never imported | Deleted |
 | `config/routes.tsx` | Unused `label` field with typos | Removed (the sidebar reads `NAV_ITEMS`) |
 
-Still open: **`dashboard.scss` has no media queries**, so the four KPI cards
-squeeze together on small screens. That's part of the planned mobile layout
-work.
+The **missing media queries** in `dashboard.scss` were fixed as part of the
+responsive work. See [responsive-layout-tutorial.md](responsive-layout-tutorial.md).
 
 ## Where to take it next
 
-- **Responsive sidebar**: collapse it to icons, or a hamburger menu, below ~900px.
 - **Use real data**: the Dashboard could call `fetchUsers()` like the Users
   page does. "Active Users" and "Recent Users" would then come from the same
   source.

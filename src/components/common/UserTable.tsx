@@ -49,7 +49,7 @@ const UserTable = ({
 
             return (
               <tr key={user.id}>
-                <td>
+                <td className="user-table__cell--user">
                   <div className="user-table__user-cell">
                     <div className="user-table__avatar">
                       {getInitials(user.name)}
@@ -60,23 +60,23 @@ const UserTable = ({
                     </div>
                   </div>
                 </td>
-                <td>
+                <td className="user-table__cell--role">
                   <span className="user-table__role">
                     {capitalize(user.role)}
                   </span>
                 </td>
-                <td>
+                <td className="user-table__cell--status">
                   <Badge
                     label={user.status}
                     variant={USER_STATUS_BADGE[user.status]}
                   />
                 </td>
-                <td>
+                <td className="user-table__cell--date">
                   <span className="user-table__date">
                     {formatDate(user.createdAt)}
                   </span>
                 </td>
-                <td>
+                <td className="user-table__cell--actions">
                   <div className="user-table__actions">
                     <Button
                       variant="secondary"

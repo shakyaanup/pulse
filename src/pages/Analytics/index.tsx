@@ -102,7 +102,12 @@ const Analytics = () => {
           <DateRangePicker value={range} onChange={setRange} />
         </div>
 
-        <div className="analytics__metrics">
+        <div
+          className="analytics__metrics"
+          role="region"
+          aria-label="Key metrics"
+          tabIndex={0}
+        >
           {data.metrics.map((metric) => (
             <MetricCard
               key={metric.label}

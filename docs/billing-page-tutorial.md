@@ -421,8 +421,9 @@ with a chosen `initialSubscription`, and checks:
 | `PlanCard.tsx` | "/ monthly" vs "/ month" on the current plan card | Both use `PLAN_INTERVAL_LABEL` |
 | `types/index.ts` | `Plan.isCurrent` duplicated what the subscription says | Removed. `PlanCard` works it out from `currentPlan` |
 
-Still open: **`billings.scss` has three fixed columns** that get very narrow on
-small screens. That's part of the planned mobile layout work.
+The **three fixed columns** in `billings.scss` now drop to one column on
+phones. See [responsive-layout-tutorial.md](responsive-layout-tutorial.md) for
+why it's "3 or 1, never 2 + 1".
 
 ## Where to take it next
 

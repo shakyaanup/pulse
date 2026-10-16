@@ -56,5 +56,10 @@
     font-size: 11px;
     color: $color-text-muted;
     white-space: nowrap;
+
+    // Not enough room next to the name and badge on phones
+    @include mobile {
+      display: none;
+    }
   }
 }

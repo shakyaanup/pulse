@@ -20,7 +20,12 @@
 .billing__plans-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: $space-5;
+  gap: $space-6 $space-5; // extra row gap leaves room for the "Most Popular" badge
+
+  // Three cards side by side or one per row -- never 2 + 1
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
 }
 
 .billing__status:empty {

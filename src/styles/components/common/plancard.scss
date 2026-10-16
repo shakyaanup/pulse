@@ -9,6 +9,11 @@
   position: relative;
   transition: border-color 0.15s ease;
 
+  // Tablets fit three narrower cards; tighten the padding to match
+  @include tablet-down {
+    padding: $space-5;
+  }
+
   &:hover {
     border-color: $color-primary;
   }

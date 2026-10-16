@@ -53,64 +53,68 @@ const DataTable = <T,>({
   };
 
   return (
-    <table className="data-table">
-      <thead>
-        <tr>
-          {columns.map((column) => {
-            const isSorted = sort?.key === column.key;
-            const SortIcon = !isSorted
-              ? ArrowUpDown
-              : sort.direction === 'asc'
-                ? ArrowUp
-                : ArrowDown;
+    // The wrapper scrolls sideways on narrow screens instead of squashing
+    // the columns or widening the page
+    <div className="data-table__scroll">
+      <table className="data-table">
+        <thead>
+          <tr>
+            {columns.map((column) => {
+              const isSorted = sort?.key === column.key;
+              const SortIcon = !isSorted
+                ? ArrowUpDown
+                : sort.direction === 'asc'
+                  ? ArrowUp
+                  : ArrowDown;
 
-            return (
-              <th
-                key={column.key}
-                className={clsx(
-                  column.align === 'right' && 'data-table__cell--right'
-                )}
-                aria-sort={
-                  isSorted
-                    ? sort.direction === 'asc'
-                      ? 'ascending'
-                      : 'descending'
-                    : 'none'
-                }
-              >
-                <button
-                  type="button"
+              return (
+                <th
+                  key={column.key}
                   className={clsx(
-                    'data-table__sort',
-                    isSorted && 'data-table__sort--active'
+                    column.align === 'right' && 'data-table__cell--right'
                   )}
-                  onClick={() => handleSort(column.key)}
+                  aria-sort={
+                    isSorted
+                      ? sort.direction === 'asc'
+                        ? 'ascending'
+                        : 'descending'
+                      : 'none'
+                  }
                 >
-                  {column.header}
-                  <SortIcon size={12} />
-                </button>
-              </th>
-            );
-          })}
-        </tr>
-      </thead>
-      <tbody>
-        {sortedRows.map((row) => (
-          <tr key={String(row[rowKey])}>
-            {columns.map((column) => (
-              <td
-                key={column.key}
-                className={clsx(
-                  column.align === 'right' && 'data-table__cell--right'
-                )}
-              >
-                {column.render ? column.render(row) : String(row[column.key])}
-              </td>
-            ))}
+                  <button
+                    type="button"
+                    className={clsx(
+                      'data-table__sort',
+                      isSorted && 'data-table__sort--active'
+                    )}
+                    onClick={() => handleSort(column.key)}
+                  >
+                    {column.header}
+                    <SortIcon size={12} />
+                  </button>
+                </th>
+              );
+            })}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {sortedRows.map((row) => (
+            <tr key={String(row[rowKey])}>
+              {columns.map((column) => (
+                <td
+                  key={column.key}
+                  className={clsx(
+                    column.align === 'right' && 'data-table__cell--right'
+                  )}
+                >
+                  {column.render ? column.render(row) : String(row[column.key])}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
