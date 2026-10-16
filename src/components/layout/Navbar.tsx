@@ -2,8 +2,9 @@ import { RefObject } from 'react';
 import { Menu } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import ProfileMenu from './ProfileMenu';
+import { useAuth } from '../../context/AuthContext';
 import { useSubscription } from '../../context/SubscriptionContext';
-import { mockCurrentUser } from '../../services/mockData';
+import { clearAppStorage } from '../../services/storage';
 
 interface NavbarProps {
   pageTitle: string;
@@ -19,6 +20,14 @@ const Navbar = ({
   menuButtonRef,
 }: NavbarProps) => {
   const { subscription } = useSubscription();
+  const { user, logout } = useAuth();
+
+  // Wipes everything the demo has saved and starts again from the mock data
+  // (this also signs you out)
+  const handleResetDemo = () => {
+    clearAppStorage();
+    window.location.reload();
+  };
 
   return (
     <div className="navbar">
@@ -40,7 +49,14 @@ const Navbar = ({
 
       <div className="navbar__actions">
         <NotificationBell />
-        <ProfileMenu user={mockCurrentUser} planName={subscription.plan.name} />
+        {user && (
+          <ProfileMenu
+            user={user}
+            planName={subscription.plan.name}
+            onLogout={logout}
+            onResetDemo={handleResetDemo}
+          />
+        )}
       </div>
     </div>
   );

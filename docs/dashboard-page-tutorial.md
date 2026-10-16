@@ -23,7 +23,7 @@ src/
 │   └── Navbar.tsx                    ← 3. top bar
 ├── styles/                           ← 4. SCSS system
 ├── types/index.ts                    ← 5. MetricCard type
-├── services/mockData.ts              ← 5. mockMetrics, mockRevenueChart, mockRecentUsers
+├── services/mockData.ts              ← 5. mockMetrics, mockRevenueChart
 ├── utils/index.ts                    ← 5. formatCurrency, formatPercentage, formatDate
 ├── components/common/
 │   ├── Card.tsx                      ← 6. generic container
@@ -208,11 +208,10 @@ says how to display it. The data stays usable for maths, and formatting
 happens only in the UI. `mockMetrics` is an array of four of these, so the page
 renders them with one `.map()`.
 
-`mockRecentUsers` is `mockUsers.slice(0, 5)`, which is derived from the main list
-rather than copied, so the Dashboard and Users page always show the same people.
-Its type is `Pick<User, 'id' | 'name' | 'email' | 'status' | 'createdAt'>`.
-**`Pick`** builds a smaller type from an existing one, listing only the fields
-this list needs.
+Recent users used to be `mockRecentUsers` (`mockUsers.slice(0, 5)`). They're
+now loaded with `fetchUsers()` from the users service, the same source as the
+Users page, so edits and suspensions made there show up here. The Dashboard
+shows "Loading users..." in the card while they load.
 
 The formatters in `utils/index.ts` use the built-in **`Intl`** API:
 
@@ -366,14 +365,16 @@ const Button = ({ variant = 'primary', size = 'md', isLoading = false, children,
     </div>
     <div className="dashboard__grid">
       <Card title="Revenue vs Target"><RevenueChart data={mockRevenueChart} /></Card>
-      <Card title="Recent Users"><RecentUsers users={mockRecentUsers} /></Card>
+      <Card title="Recent Users">
+        {recentUsers ? <RecentUsers users={recentUsers} /> : <p>Loading users...</p>}
+      </Card>
     </div>
   </div>
 </PageWrapper>
 ```
 
-The page has no state and no logic. It only arranges components and passes
-them data. `key={metric.label}` gives React a stable identity for each card in
+The page is almost entirely layout. Its one piece of state is `recentUsers`,
+loaded in an effect with the same `ignore` cleanup as the Users page. `key={metric.label}` gives React a stable identity for each card in
 the list. Labels are unique, so they work as keys.
 
 The layout lives in `dashboard.scss`: `repeat(4, 1fr)` for the KPI row and

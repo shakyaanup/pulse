@@ -8,6 +8,7 @@ export const ROUTES = {
   ANALYTICS: '/analytics',
   BILLING: '/billing',
   USERS: '/users',
+  LOGIN: '/login',
 } as const;
 
 export interface NavItem {

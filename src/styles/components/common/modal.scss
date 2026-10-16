@@ -1,0 +1,81 @@
+.modal {
+  // The <dialog> itself is just a transparent frame; .modal__content is the
+  // visible box, so clicks that land on the dialog element are backdrop clicks
+  margin: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  width: min(440px, calc(100vw - #{$space-8}));
+  max-height: calc(100vh - #{$space-8});
+
+  // ::backdrop is the dimmed layer showModal() puts behind the dialog
+  &::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+
+  &[open] {
+    animation: modal-in 0.15s ease-out;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+    padding: $space-6;
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-lg;
+
+    @include mobile {
+      padding: $space-5;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 600;
+    color: $color-text-primary;
+  }
+
+  &__close {
+    display: flex;
+    padding: $space-1;
+    background: none;
+    border: none;
+    border-radius: $radius-sm;
+    color: $color-text-secondary;
+
+    &:hover {
+      background-color: $color-surface-raised;
+      color: $color-text-primary;
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $space-3;
+    margin-top: $space-2;
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}

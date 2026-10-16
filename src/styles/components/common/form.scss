@@ -1,0 +1,49 @@
+// Shared form styles: login page and the edit-user form
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  &__label {
+    font-size: 13px;
+    font-weight: 500;
+    color: $color-text-secondary;
+  }
+
+  &__input {
+    height: 42px;
+    padding: 0 $space-3;
+    background-color: $color-bg;
+    border: 1px solid $color-border;
+    border-radius: $radius-sm;
+    color: $color-text-primary;
+    font-family: $font-sans;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:focus {
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.25);
+    }
+
+    // Styled from the same attribute screen readers use to announce errors
+    &[aria-invalid='true'] {
+      border-color: $color-danger;
+    }
+  }
+
+  &__hint {
+    font-size: 12px;
+    color: $color-danger;
+  }
+}
+
+.form-error {
+  padding: $space-3;
+  border: 1px solid rgba(255, 92, 92, 0.3);
+  border-radius: $radius-sm;
+  background-color: rgba(255, 92, 92, 0.1);
+  color: $color-danger;
+  font-size: 13px;
+}

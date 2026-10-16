@@ -1,7 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PageWrapper } from '../../components/layout';
-import { Button, Card, UserTable, UserFilters } from '../../components/common';
-import { fetchUsers } from '../../services/usersService';
+import {
+  Button,
+  Card,
+  EditUserModal,
+  UserTable,
+  UserFilters,
+} from '../../components/common';
+import {
+  UserChanges,
+  fetchUsers,
+  updateUser,
+} from '../../services/usersService';
 import { User, UserFilterValues } from '../../types';
 
 const DEFAULT_FILTERS: UserFilterValues = {
@@ -15,6 +25,7 @@ const UserManagement = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<UserFilterValues>(DEFAULT_FILTERS);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   // Bumping this number re-runs the effect below, which re-fetches
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -73,19 +84,29 @@ const UserManagement = () => {
     setReloadKey((key) => key + 1);
   };
 
-  // Mock data only lives in memory; with a backend this would also send a
-  // request such as apiClient.patch(`/users/${userId}`, { status })
-  const handleToggleSuspend = (userId: string) => {
+  const replaceUser = (updated: User) =>
     setUsers((current) =>
-      current.map((user) =>
-        user.id === userId
-          ? {
-              ...user,
-              status: user.status === 'suspended' ? 'active' : 'suspended',
-            }
-          : user
-      )
+      current.map((user) => (user.id === updated.id ? updated : user))
     );
+
+  // Optimistic update: show the change straight away, save in the
+  // background, and put it back if saving fails
+  const handleToggleSuspend = (userId: string) => {
+    const user = users.find((u) => u.id === userId);
+    if (!user) return;
+
+    const status = user.status === 'suspended' ? 'active' : 'suspended';
+    replaceUser({ ...user, status });
+    updateUser(userId, { status }).catch(() => replaceUser(user));
+  };
+
+  // Not optimistic: the form waits for the save, so it can show errors
+  // (like a duplicate email) and stay open to fix them
+  const handleSaveUser = async (changes: UserChanges) => {
+    if (!editingUser) return;
+    const updated = await updateUser(editingUser.id, changes);
+    replaceUser(updated);
+    setEditingUser(null);
   };
 
   return (
@@ -111,6 +132,7 @@ const UserManagement = () => {
                 users={filteredUsers}
                 isLoading={isLoading}
                 onToggleSuspend={handleToggleSuspend}
+                onEdit={setEditingUser}
                 emptyMessage="No users match your filters."
               />
               {!isLoading && (
@@ -122,6 +144,12 @@ const UserManagement = () => {
           )}
         </Card>
       </div>
+
+      <EditUserModal
+        user={editingUser}
+        onClose={() => setEditingUser(null)}
+        onSave={handleSaveUser}
+      />
     </PageWrapper>
   );
 };

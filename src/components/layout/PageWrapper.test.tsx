@@ -2,8 +2,10 @@ import { ReactNode } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import PageWrapper from './PageWrapper';
+import { AuthProvider } from '../../context/AuthContext';
 import { NotificationsProvider } from '../../context/NotificationsContext';
 import { SubscriptionProvider } from '../../context/SubscriptionContext';
+import { mockCurrentUser } from '../../services/mockData';
 
 // Names starting with "mock" may be used inside jest.mock() factories
 type MockLinkProps = {
@@ -38,13 +40,15 @@ jest.mock(
 
 const renderLayout = () =>
   render(
-    <SubscriptionProvider>
-      <NotificationsProvider>
-        <PageWrapper pageTitle="Dashboard">
-          <p>Page content</p>
-        </PageWrapper>
-      </NotificationsProvider>
-    </SubscriptionProvider>
+    <AuthProvider initialUser={mockCurrentUser}>
+      <SubscriptionProvider>
+        <NotificationsProvider>
+          <PageWrapper pageTitle="Dashboard">
+            <p>Page content</p>
+          </PageWrapper>
+        </NotificationsProvider>
+      </SubscriptionProvider>
+    </AuthProvider>
   );
 
 const menuButton = () => screen.getByRole('button', { name: 'Open menu' });

@@ -6,18 +6,22 @@ nothing. It now:
 - **loads** users through an async service, with loading and error states
 - **filters** live by search text (name or email), status and role
 - **suspends / reactivates** users, and the stats update immediately
+- **edits** users (name, email, role) in a modal form with validation
+- **saves** every change, so it survives a page reload
 - shows **"Showing X of Y users"** and an empty state when nothing matches
 - has **tests** for all of the above
 
 ```
 src/
 ├── types/index.ts                         ← 1. UserFilterValues type
-├── services/usersService.ts               ← 2. fetchUsers() — fake network call
+├── services/usersService.ts               ← 2. fetchUsers(), updateUser() — fake API
 ├── constants/index.ts                     ← 3. USER_STATUS_BADGE (shared)
 ├── utils/index.ts                         ← 4. capitalize(), getInitials()
 ├── components/common/
 │   ├── UserFilters.tsx                    ← 5. controlled filter inputs
 │   ├── UserTable.tsx                      ← 6. renders rows from props
+│   ├── Modal.tsx                          ← 9. reusable <dialog> modal
+│   ├── EditUserModal.tsx                  ← 9. the edit form
 │   ├── RecentUsers.tsx                    ← uses the shared status map
 │   └── Card.tsx                           ← title is now optional
 ├── pages/UserManagement/
@@ -129,9 +133,10 @@ SCSS and was just unused.
 
 The action button changes with the status: **Suspend** (red) for active users,
 **Reactivate** for suspended ones. The table doesn't change any data itself. It
-calls `onToggleSuspend(user.id)` and the page decides what happens. "Edit" is
-disabled with a "coming soon" tooltip, because a button that does nothing when
-clicked looks broken.
+calls `onToggleSuspend(user.id)` and the page decides what happens. **Edit**
+works the same way: it calls `onEdit(user)` (see section 9). Its
+`aria-label` is `Edit Sarah Connor`, because a screen reader listing ten
+buttons all called "Edit" wouldn't say which user each one belongs to.
 
 ---
 
@@ -190,9 +195,148 @@ setUsers((current) =>
   the changed user only. The other users keep the same object, which React can
   use to skip work.
 
+### Saving the change — an *optimistic* update
+
+Suspensions are now saved through the service (see the
+[saved data tutorial](auth-and-saved-data-tutorial.md)):
+
+```tsx
+const handleToggleSuspend = (userId: string) => {
+  const user = users.find((u) => u.id === userId);
+  if (!user) return;
+
+  const status = user.status === 'suspended' ? 'active' : 'suspended';
+  replaceUser({ ...user, status });                               // 1. show it now
+  updateUser(userId, { status }).catch(() => replaceUser(user));  // 2. save; undo on failure
+};
+```
+
+This is an **optimistic update**: the screen changes immediately, *assuming*
+the save will work, and quietly reverts if it doesn't. It suits small, easily
+undone actions like a toggle. Waiting 400 ms after every click would make the
+app feel slow.
+
 ---
 
-## 8. `UserManagement.test.tsx` — testing what the user sees
+## 9. Editing a user — `Modal` and `EditUserModal`
+
+### A modal built on `<dialog>`
+
+```tsx
+const Modal = ({ isOpen, onClose, title, children }) => {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (isOpen && !dialog.open) dialog.showModal();
+    if (!isOpen && dialog.open) dialog.close();
+  }, [isOpen]);
+
+  return (
+    <dialog
+      ref={dialogRef}
+      aria-labelledby={titleId}
+      onCancel={(event) => { event.preventDefault(); onClose(); }}
+      onClick={(event) => { if (event.target === dialogRef.current) onClose(); }}
+    >
+      …
+```
+
+The browser's **`<dialog>` element with `showModal()`** provides what a modal
+needs, which used to take a library or a lot of code:
+
+| You get | Why it matters |
+|---|---|
+| A backdrop (`::backdrop` in CSS) | The page behind dims |
+| Focus moves into the dialog and **can't Tab out** | Keyboard users can't get lost behind it |
+| Escape closes it | Expected keyboard behaviour |
+| It sits above everything (the "top layer") | No `z-index` battles |
+| Focus returns to the Edit button on close | Keyboard users keep their place |
+
+The React parts:
+
+- **`isOpen` is the source of truth.** `<dialog>` has its own open/closed
+  state, and the effect keeps it matching React's. It's the same "effects
+  connect React to things outside it" idea as the dropdowns.
+- **`onCancel` + `preventDefault()`**: Escape fires a `cancel` event, and the
+  browser would close the dialog itself. Preventing that and calling `onClose`
+  lets React make the change, so the two never disagree.
+- **Backdrop clicks**: the visible box (`.modal__content`) fills the dialog, so
+  a click whose target is the `<dialog>` element itself must have landed on the
+  backdrop.
+- **`useId()`** generates a unique id to connect the title to the dialog
+  (`aria-labelledby`), so a screen reader announces "Edit user, dialog".
+
+### The form
+
+```tsx
+const EditUserModal = ({ user, onClose, onSave }) => (
+  <Modal isOpen={user !== null} onClose={onClose} title="Edit user">
+    {user && <EditUserForm key={user.id} user={user} onCancel={onClose} onSave={onSave} />}
+  </Modal>
+);
+```
+
+- **`user: User | null`** means one prop says both *whether* it's open and *who*
+  is being edited. They can't disagree.
+- **`key={user.id}`** is important. The form copies the user into its own
+  state (`useState(user.name)`), and that initial value is only read on
+  the **first** render. Without the key, editing Sarah and then John would show
+  Sarah's details. A different `key` tells React it's a *different* form, so it
+  starts fresh.
+
+### Two layers of validation
+
+```tsx
+// 1. In the browser: instant, no request
+const fieldErrors = validate(name, email);   // empty name? malformed email?
+setErrors(fieldErrors);
+if (Object.keys(fieldErrors).length > 0) return;
+
+// 2. On the "server": things only it can know
+try {
+  await onSave({ name: name.trim(), email: email.trim(), role });
+} catch (err) {
+  setSaveError(err.message);   // "Another user already has that email address."
+}
+```
+
+Some things the browser can check instantly (is this an email?). Others only
+the server knows (is this email already used by *anyone*?), because the browser
+may not have every user, or they may have changed since it loaded. Real apps
+need both, and the server's check is the one that actually protects the data.
+
+Errors are tied to their fields: `aria-invalid` on the input, and
+`aria-describedby` pointing at the message under it, so a screen reader reads
+"Email, invalid entry, Enter a valid email address…".
+
+### The page
+
+```tsx
+const [editingUser, setEditingUser] = useState<User | null>(null);
+
+const handleSaveUser = async (changes: UserChanges) => {
+  if (!editingUser) return;
+  const updated = await updateUser(editingUser.id, changes);
+  replaceUser(updated);
+  setEditingUser(null);
+};
+```
+
+This one is **not** optimistic, unlike suspend. The form waits for the save,
+because the save can fail with an error the user must fix (a taken email), and
+the form has to stay open to show it. If `updateUser` throws, the two lines after
+it never run and the error goes back to the form's `catch`.
+
+`UserChanges` is `Partial<Omit<User, 'id' | 'createdAt'>>`: "some of the
+user's fields, but never the id or join date". The type itself prevents editing
+fields that shouldn't change.
+
+---
+
+## 10. `UserManagement.test.tsx` — testing what the user sees
 
 The tests use React Testing Library, which finds elements the way a user
 would: by text, label and role.
@@ -207,6 +351,10 @@ What's covered:
 2. Searching by email matches the right people
 3. Status + role filters combine, the empty state shows, and "Clear filters" resets
 4. Suspend → status badge and "Active" count update → Reactivate reverses it
+5. A suspension survives a "reload" (unmount, then render again)
+6. Edit opens with the user's details, saves name + role, checks the fields,
+   shows the server's "email taken" error while staying open, and Cancel
+   discards changes
 
 `await screen.findByText(...)` waits for the 600 ms fake request. `findBy*`
 retries until the element appears, while `getBy*` checks once.
@@ -225,8 +373,8 @@ npm test
 
 ## Where to take it next
 
-- **Edit user**: a modal with a form (name, role) that updates state the same
-  way suspend does.
+- **Add / delete users**: the modal and `updateUser` pattern extend naturally
+  to `createUser` and `deleteUser` (with a confirmation modal).
 - **Pagination**: once there are more than ~20 users, slice `filteredUsers` per
   page. Since it's already derived, pagination is just one more step.
 - **Filters in the URL**: put `filters` in the query string with

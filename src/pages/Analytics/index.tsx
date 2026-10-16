@@ -1,10 +1,14 @@
 import { useMemo, useState } from 'react';
 import { PageWrapper } from '../../components/layout';
-import { Badge, Card, MetricCard } from '../../components/common';
 import {
+  Badge,
+  Card,
   Column,
-  DATE_RANGE_OPTIONS,
   DataTable,
+  MetricCard,
+} from '../../components/common';
+import {
+  DATE_RANGE_OPTIONS,
   DateRangePicker,
   RevenueByPlanChart,
   TrafficChart,

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { CreditCard, LogOut, Users } from 'lucide-react';
+import { CreditCard, LogOut, RotateCcw, Users } from 'lucide-react';
 import { Avatar, Badge } from '../common';
 import { ROUTES } from '../../constants';
 import { useDropdown } from '../../hooks/useDropdown';
@@ -9,14 +9,23 @@ import { capitalize, formatDate } from '../../utils';
 interface ProfileMenuProps {
   user: User;
   planName: string;
+  onLogout: () => void;
+  onResetDemo: () => void;
 }
 
-const ProfileMenu = ({ user, planName }: ProfileMenuProps) => {
+const ProfileMenu = ({
+  user,
+  planName,
+  onLogout,
+  onResetDemo,
+}: ProfileMenuProps) => {
   const { isOpen, toggle, close, containerRef, triggerRef } = useDropdown();
 
+  // Signing out clears the user, and RequireAuth then sends the visitor to
+  // the login page -- no navigation needed here
   const handleLogout = () => {
-    // TODO: sign the user out once authentication exists
     close();
+    onLogout();
   };
 
   return (
@@ -81,6 +90,14 @@ const ProfileMenu = ({ user, planName }: ProfileMenuProps) => {
           </nav>
 
           <div className="profile-menu__footer">
+            <button
+              type="button"
+              className="profile-menu__link"
+              onClick={onResetDemo}
+            >
+              <RotateCcw size={16} />
+              Reset demo data
+            </button>
             <button
               type="button"
               className="profile-menu__link profile-menu__link--danger"

@@ -21,7 +21,7 @@ src/
 │   ├── TrafficChart.tsx                  ← 6. line chart
 │   ├── RevenueByPlanChart.tsx            ← 7. stacked bar chart
 │   ├── TrafficSourcesChart.tsx           ← 8. donut chart
-│   ├── DataTable.tsx                     ← 9. generic sortable table
+│   ├── (DataTable.tsx — now in components/common/) ← 9. generic sortable table
 │   └── index.ts                          ← barrel file
 ├── components/common/MetricCard.tsx      ← 10. small change
 ├── pages/Analytics/index.tsx             ← 11. the page itself
@@ -215,6 +215,9 @@ breakdown table.
 ---
 
 ## 9. `DataTable.tsx` — one table component, any data
+
+> It has since moved to `components/common/DataTable.tsx`, because the
+> Billing page reuses it for invoice history.
 
 Both tables on the page use one **generic** component. The caller describes the
 columns and the table handles rendering and sorting:

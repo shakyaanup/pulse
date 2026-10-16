@@ -9,6 +9,8 @@ they can move to. It has two parts:
    with the current one outlined and the popular one highlighted. The
    **Upgrade / Downgrade** buttons switch the plan, and the whole app updates,
    including the plan shown in the profile menu.
+3. **Billing history**: past invoices in a sortable table, newest first, with
+   a status badge for each.
 
 ```
 src/
@@ -362,6 +364,44 @@ scrolling. Later it could open a modal instead, without touching the card.
 
 ---
 
+## 5b. Billing history
+
+```tsx
+const invoiceColumns: Column<Invoice>[] = [
+  { key: 'id', header: 'Invoice', render: (invoice) => <span className="billing__invoice-id">{invoice.id}</span> },
+  { key: 'date', header: 'Date', render: (invoice) => formatDate(invoice.date) },
+  { key: 'planName', header: 'Plan' },
+  { key: 'amount', header: 'Amount', align: 'right', render: (invoice) => formatCurrency(invoice.amount) },
+  { key: 'status', header: 'Status', align: 'right', render: (invoice) => <Badge … /> },
+];
+
+<DataTable columns={invoiceColumns} rows={mockInvoices} rowKey="id"
+           initialSort={{ key: 'date', direction: 'desc' }} />
+```
+
+**Reusing `DataTable`.** The sortable table was built for the Analytics page.
+It was generic from the start (it takes any row type plus column definitions),
+so showing invoices needed **no new table code**, only a list of columns. It
+moved from `components/analytics/` to `components/common/` because it's no
+longer specific to Analytics. On phones it scrolls sideways inside its card,
+as on Analytics.
+
+**Sorting works on raw values.** The table sorts by `invoice.date` (the stored
+`'2024-12-01'`) and *displays* `render`'s "Dec 1, 2024". ISO dates
+(`YYYY-MM-DD`) sort correctly as plain text, because the biggest unit comes
+first. "Dec 1, 2024" would sort alphabetically, putting April before December.
+
+**`{ key: 'planName', header: 'Plan' }`** has no `render`. The table falls back
+to showing the raw value, which is already readable.
+
+**Statuses use a lookup table** like the subscription status:
+`paid → Paid / green`, `pending → Pending / amber`, `failed → Failed / red`.
+
+**Fixed along the way:** `mockInvoices` still listed Growth at $79, while the
+subscription is Starter at $29. The history now matches the current plan.
+
+---
+
 ## 6. Styles
 
 - **`billings.scss`**: the page is a column with `$space-8` gaps, and the plans
@@ -429,9 +469,9 @@ why it's "3 or 1, never 2 + 1".
 
 - **Confirm before changing**: show a modal with the price difference before
   switching plans. Right now a click switches immediately.
-- **Remember the choice**: a page refresh resets to Starter. Saving the
-  subscription in `localStorage` (or on a server) would keep it.
 - **Monthly/yearly toggle**: add a switch above the grid that shows yearly
   prices (for example, two months free).
-- **Invoice history**: `mockInvoices` already exists. Show it in a table below
-  the plans, using `Badge` for paid/pending/failed.
+- **New invoices on plan change**: when the plan changes, add a prorated
+  invoice to the history.
+- **Invoice details**: open an invoice in the `Modal` component (see the Users
+  tutorial) with line items and a Print button.

@@ -113,3 +113,13 @@ test('"Mark all as read" clears the badge', () => {
     screen.queryByRole('button', { name: /Mark all as read/ })
   ).not.toBeInTheDocument();
 });
+
+test('read notifications stay read after a reload', () => {
+  const { unmount } = renderBell();
+  userEvent.click(bell());
+  userEvent.click(screen.getByRole('button', { name: /Mark all as read/ }));
+  unmount();
+
+  renderBell(); // same starting data, but saved state wins
+  expect(bell()).toHaveAccessibleName('Notifications');
+});

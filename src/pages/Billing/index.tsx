@@ -1,10 +1,60 @@
 import { useRef, useState } from 'react';
 import { CheckCircle } from 'lucide-react';
-import { CurrentPlanCard, PlanCard } from '../../components/common';
+import {
+  Badge,
+  Card,
+  Column,
+  CurrentPlanCard,
+  DataTable,
+  PlanCard,
+} from '../../components/common';
 import { PageWrapper } from '../../components/layout';
 import { useSubscription } from '../../context/SubscriptionContext';
-import { mockPlans } from '../../services/mockData';
-import { Plan } from '../../types';
+import { mockInvoices, mockPlans } from '../../services/mockData';
+import { Invoice, Plan } from '../../types';
+import { formatCurrency, formatDate } from '../../utils';
+
+const INVOICE_STATUS_BADGE: Record<
+  Invoice['status'],
+  { label: string; variant: 'success' | 'warning' | 'danger' }
+> = {
+  paid: { label: 'Paid', variant: 'success' },
+  pending: { label: 'Pending', variant: 'warning' },
+  failed: { label: 'Failed', variant: 'danger' },
+};
+
+// Sorting uses the raw values (ISO dates sort correctly as text, amounts as
+// numbers); render controls what's shown
+const invoiceColumns: Column<Invoice>[] = [
+  {
+    key: 'id',
+    header: 'Invoice',
+    render: (invoice) => (
+      <span className="billing__invoice-id">{invoice.id}</span>
+    ),
+  },
+  {
+    key: 'date',
+    header: 'Date',
+    render: (invoice) => formatDate(invoice.date),
+  },
+  { key: 'planName', header: 'Plan' },
+  {
+    key: 'amount',
+    header: 'Amount',
+    align: 'right',
+    render: (invoice) => formatCurrency(invoice.amount),
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    align: 'right',
+    render: (invoice) => {
+      const badge = INVOICE_STATUS_BADGE[invoice.status];
+      return <Badge label={badge.label} variant={badge.variant} />;
+    },
+  },
+];
 
 const Billing = () => {
   const { subscription, changePlan } = useSubscription();
@@ -55,6 +105,18 @@ const Billing = () => {
               />
             ))}
           </div>
+        </div>
+
+        <div className="billing__section">
+          <h2 className="billing__section-title">Billing History</h2>
+          <Card>
+            <DataTable
+              columns={invoiceColumns}
+              rows={mockInvoices}
+              rowKey="id"
+              initialSort={{ key: 'date', direction: 'desc' }}
+            />
+          </Card>
         </div>
       </div>
     </PageWrapper>

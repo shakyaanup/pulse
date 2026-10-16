@@ -168,8 +168,8 @@ The menu doesn't import mock data. `Navbar` passes it in. So:
 
 - **tests** can pass any user (with or without a photo) without touching mock
   data
-- when real sign-in arrives, only `Navbar` changes: it would read the user from
-  an auth context instead of `mockCurrentUser`
+- when real sign-in arrived, only `Navbar` changed: it now reads the user
+  from `AuthContext` instead of `mockCurrentUser`
 
 `planName` comes from `SubscriptionContext`, the same shared state the Billing
 page uses. When you switch plans on Billing, the menu shows the new plan
@@ -205,8 +205,9 @@ free. `aria-controls` connects the button to the panel's `id`.
   click, so the menu doesn't stay open on the new page. (The notification items
   use `navigate()` because clicking them does two things: marks the item as read
   *and* navigates.)
-- **Log out** is a `<button>`, because it's an action, not a destination. For
-  now it just closes the menu:
+- **Log out** is a `<button>`, because it's an action, not a destination.
+  When this menu was built there was no sign-in yet, so it only closed the
+  menu:
 
   ```tsx
   const handleLogout = () => {
@@ -215,9 +216,9 @@ free. `aria-controls` connects the button to the panel's `id`.
   };
   ```
 
-  The handler already exists with a clear `TODO`, so adding real sign-out later
-  means filling in one function. The red `--danger` style warns that it's a
-  different kind of action from the links above it.
+  It now receives an `onLogout` prop and calls it, and a **Reset demo data**
+  item was added above it. See the
+  [login and saved data tutorial](auth-and-saved-data-tutorial.md).
 
 ## 5. Styles
 
@@ -308,9 +309,8 @@ Run them with `npm test`.
 
 ## Where to take it next
 
-- **Real sign-out**: add an `AuthContext` (same shape as
-  `NotificationsContext`) holding the current user, with a `logout()` that clears
-  it and calls `navigate('/login')`. `handleLogout` calls `logout()`.
+- ~~**Real sign-out**~~: done. See the
+  [login and saved data tutorial](auth-and-saved-data-tutorial.md).
 - **Profile page**: a `/profile` route where the user can edit their name and
   upload a photo. `Avatar` already handles the new `src`.
 - **Reuse `Avatar`**: the Users table and Recent Users list still have their own

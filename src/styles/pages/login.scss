@@ -1,0 +1,82 @@
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-6 $space-4;
+  // A soft glow in the brand colour behind the card
+  background:
+    radial-gradient(circle at 50% 0%, rgba(108, 99, 255, 0.18), transparent 60%),
+    $color-bg;
+
+  &__card {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+    padding: $space-8;
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-lg;
+
+    @include mobile {
+      padding: $space-6 $space-5;
+    }
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    font-size: 22px;
+    font-weight: 700;
+
+    svg {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  &__title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: -$space-3; // pull the subtitle closer
+  }
+
+  &__subtitle {
+    font-size: 14px;
+    color: $color-text-secondary;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+
+    .btn {
+      width: 100%;
+      margin-top: $space-2;
+    }
+  }
+
+  &__demo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+    flex-wrap: wrap;
+    padding: $space-4;
+    border: 1px dashed $color-border;
+    border-radius: $radius-md;
+    font-size: 13px;
+    color: $color-text-secondary;
+
+    strong {
+      color: $color-text-primary;
+      font-weight: 600;
+    }
+  }
+}

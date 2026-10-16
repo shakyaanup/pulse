@@ -25,4 +25,11 @@
   &__chart-card {
     margin: 0;
   }
+
+  &__loading {
+    padding: $space-6 0;
+    text-align: center;
+    font-size: 13px;
+    color: $color-text-muted;
+  }
 }

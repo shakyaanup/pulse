@@ -4,10 +4,10 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useState,
 } from 'react';
 import { Notification } from '../types';
 import { mockNotifications } from '../services/mockData';
+import { usePersistentState } from '../hooks/usePersistentState';
 
 interface NotificationsContextValue {
   notifications: Notification[];
@@ -31,18 +31,24 @@ export const NotificationsProvider = ({
   children,
   initialNotifications = mockNotifications,
 }: NotificationsProviderProps) => {
-  const [notifications, setNotifications] =
-    useState<Notification[]>(initialNotifications);
+  // Saved, so read/unread state also survives a page reload
+  const [notifications, setNotifications] = usePersistentState<Notification[]>(
+    'notifications',
+    initialNotifications
+  );
 
-  const markAsRead = useCallback((id: string) => {
-    setNotifications((current) =>
-      current.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-  }, []);
+  const markAsRead = useCallback(
+    (id: string) => {
+      setNotifications((current) =>
+        current.map((n) => (n.id === id ? { ...n, read: true } : n))
+      );
+    },
+    [setNotifications]
+  );
 
   const markAllAsRead = useCallback(() => {
     setNotifications((current) => current.map((n) => ({ ...n, read: true })));
-  }, []);
+  }, [setNotifications]);
 
   // Memoised so consumers only re-render when the notifications change
   const value = useMemo(

@@ -4,10 +4,10 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useState,
 } from 'react';
 import { Plan, Subscription } from '../types';
 import { mockSubscription } from '../services/mockData';
+import { usePersistentState } from '../hooks/usePersistentState';
 
 interface SubscriptionContextValue {
   subscription: Subscription;
@@ -28,14 +28,20 @@ export const SubscriptionProvider = ({
   children,
   initialSubscription = mockSubscription,
 }: SubscriptionProviderProps) => {
-  const [subscription, setSubscription] =
-    useState<Subscription>(initialSubscription);
+  // Saved, so a plan change survives a page reload
+  const [subscription, setSubscription] = usePersistentState<Subscription>(
+    'subscription',
+    initialSubscription
+  );
 
   // With a backend this would also call something like
   // apiClient.post('/subscription/change', { planId: plan.id })
-  const changePlan = useCallback((plan: Plan) => {
-    setSubscription((current) => ({ ...current, plan }));
-  }, []);
+  const changePlan = useCallback(
+    (plan: Plan) => {
+      setSubscription((current) => ({ ...current, plan }));
+    },
+    [setSubscription]
+  );
 
   const value = useMemo(
     () => ({ subscription, changePlan }),

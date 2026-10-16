@@ -8,6 +8,7 @@ interface UserTableProps {
   users: User[];
   isLoading: boolean;
   onToggleSuspend: (userId: string) => void;
+  onEdit: (user: User) => void;
   emptyMessage?: string;
 }
 
@@ -17,6 +18,7 @@ const UserTable = ({
   users,
   isLoading,
   onToggleSuspend,
+  onEdit,
   emptyMessage = 'No users found.',
 }: UserTableProps) => {
   return (
@@ -81,8 +83,8 @@ const UserTable = ({
                     <Button
                       variant="secondary"
                       size="sm"
-                      disabled
-                      title="Editing is coming soon"
+                      aria-label={`Edit ${user.name}`}
+                      onClick={() => onEdit(user)}
                     >
                       Edit
                     </Button>

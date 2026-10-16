@@ -390,8 +390,10 @@ Run them with `npm test`.
   and add them with `setNotifications((current) => [incoming, ...current])`.
   The badge updates automatically because `unreadCount` is calculated from the
   list.
-- **Persist read state**: right now a page refresh resets it. Saving read IDs in
-  `localStorage`, or on a server, would keep them.
+- ~~**Persist read state**~~: done. The provider now uses
+  `usePersistentState` (see the
+  [saved data tutorial](auth-and-saved-data-tutorial.md)), so read state
+  survives a reload.
 - **Dismiss / delete**: add `removeNotification(id)` to the context, following
   the same pattern as `markAsRead`.
 - **"View all" page**: a `/notifications` route with filters (unread only, by

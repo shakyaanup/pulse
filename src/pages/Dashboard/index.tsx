@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { PageWrapper } from '../../components/layout';
 import {
   Card,
@@ -5,13 +6,27 @@ import {
   RevenueChart,
   RecentUsers,
 } from '../../components/common';
-import {
-  mockMetrics,
-  mockRevenueChart,
-  mockRecentUsers,
-} from '../../services/mockData';
+import { mockMetrics, mockRevenueChart } from '../../services/mockData';
+import { fetchUsers } from '../../services/usersService';
+import { User } from '../../types';
+
+const RECENT_USER_COUNT = 5;
 
 const Dashboard = () => {
+  // Loaded from the same service as the Users page, so edits and
+  // suspensions made there show up here too
+  const [recentUsers, setRecentUsers] = useState<User[] | null>(null);
+
+  useEffect(() => {
+    let ignore = false;
+    fetchUsers().then((users) => {
+      if (!ignore) setRecentUsers(users.slice(0, RECENT_USER_COUNT));
+    });
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   return (
     <PageWrapper pageTitle="Dashboard">
       <div className="dashboard">
@@ -31,7 +46,11 @@ const Dashboard = () => {
           </Card>
 
           <Card title="Recent Users">
-            <RecentUsers users={mockRecentUsers} />
+            {recentUsers ? (
+              <RecentUsers users={recentUsers} />
+            ) : (
+              <p className="dashboard__loading">Loading users...</p>
+            )}
           </Card>
         </div>
       </div>

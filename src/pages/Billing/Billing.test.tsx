@@ -59,3 +59,20 @@ test("can't downgrade to a plan with fewer seats than are in use", () => {
     within(starterCard).getByRole('button', { name: 'Needs 12 seats' })
   ).toBeDisabled();
 });
+
+test('lists past invoices, newest first, with their status', () => {
+  renderBilling();
+
+  const history = screen
+    .getByRole('heading', { name: 'Billing History' })
+    .closest('.billing__section') as HTMLElement;
+  const rows = within(history).getAllByRole('row').slice(1); // skip header
+
+  expect(rows).toHaveLength(6);
+  expect(rows[0]).toHaveTextContent('INV-2024-012');
+  expect(rows[0]).toHaveTextContent('Dec 1, 2024');
+  expect(rows[0]).toHaveTextContent('$29');
+  expect(
+    within(history).getByText('INV-2024-009').closest('tr')
+  ).toHaveTextContent('Failed');
+});

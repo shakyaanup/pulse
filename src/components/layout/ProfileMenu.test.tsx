@@ -36,13 +36,20 @@ const user: User = {
 };
 
 const renderMenu = (overrides: Partial<User> = {}) => {
+  const onLogout = jest.fn();
+  const onResetDemo = jest.fn();
   const { container } = render(
     <>
-      <ProfileMenu user={{ ...user, ...overrides }} planName="Starter" />
+      <ProfileMenu
+        user={{ ...user, ...overrides }}
+        planName="Starter"
+        onLogout={onLogout}
+        onResetDemo={onResetDemo}
+      />
       <p>Outside</p>
     </>
   );
-  return { container };
+  return { container, onLogout, onResetDemo };
 };
 
 const trigger = () =>
@@ -102,12 +109,21 @@ test('links go to the right pages and close the menu', () => {
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
 
-test('log out closes the menu', () => {
-  renderMenu();
+test('log out closes the menu and signs out', () => {
+  const { onLogout } = renderMenu();
 
   userEvent.click(trigger());
   userEvent.click(screen.getByRole('button', { name: /Log out/ }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  expect(onLogout).toHaveBeenCalledTimes(1);
+});
+
+test('"Reset demo data" calls onResetDemo', () => {
+  const { onResetDemo } = renderMenu();
+
+  userEvent.click(trigger());
+  userEvent.click(screen.getByRole('button', { name: /Reset demo data/ }));
+  expect(onResetDemo).toHaveBeenCalledTimes(1);
 });
 
 test('closes on Escape and on a click outside', () => {

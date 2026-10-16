@@ -148,12 +148,6 @@ export const mockUsers: User[] = [
   },
 ];
 
-//Array of 5 users for the dashboard
-export const mockRecentUsers: Pick<
-  User,
-  'id' | 'name' | 'email' | 'status' | 'createdAt'
->[] = mockUsers.slice(0, 5);
-
 export const mockPlans: Plan[] = [
   {
     id: 'starter',
@@ -220,33 +214,33 @@ export const mockInvoices: Invoice[] = [
   {
     id: 'INV-2024-012',
     date: '2024-12-01',
-    amount: 79,
+    amount: 29,
     status: 'paid',
-    planName: 'Growth',
+    planName: 'Starter',
     downloadUrl: '#',
   },
   {
     id: 'INV-2024-011',
     date: '2024-11-01',
-    amount: 79,
+    amount: 29,
     status: 'paid',
-    planName: 'Growth',
+    planName: 'Starter',
     downloadUrl: '#',
   },
   {
     id: 'INV-2024-010',
     date: '2024-10-01',
-    amount: 79,
+    amount: 29,
     status: 'paid',
-    planName: 'Growth',
+    planName: 'Starter',
     downloadUrl: '#',
   },
   {
     id: 'INV-2024-009',
     date: '2024-09-01',
-    amount: 79,
+    amount: 29,
     status: 'failed',
-    planName: 'Growth',
+    planName: 'Starter',
     downloadUrl: '#',
   },
   {
@@ -329,6 +323,10 @@ export const mockNotifications: Notification[] = [
     link: ROUTES.BILLING,
   },
 ];
+
+// The demo account. The login page shows these credentials, since anyone
+// trying the portfolio demo needs a way in.
+export const DEMO_PASSWORD = 'pulse-demo';
 
 // The signed-in user shown in the header. Remove avatarUrl to see the
 // initials fallback.

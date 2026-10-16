@@ -9,3 +9,8 @@ export { default as UserFilters } from './UserFilters';
 export { default as PlanCard } from './PlanCard';
 export { default as CurrentPlanCard } from './CurrentPlanCard';
 export { default as Avatar } from './Avatar';
+export { default as Logo } from './Logo';
+export { default as Modal } from './Modal';
+export { default as EditUserModal } from './EditUserModal';
+export { default as DataTable } from './DataTable';
+export type { Column } from './DataTable';
